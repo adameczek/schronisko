@@ -52,7 +52,6 @@ jobs:
       with:
         images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
         tags: |
-          # set latest tag for master branch
           type=raw,value=latest,enable=${{ github.ref == format('refs/heads/{0}', 'main') }}
     - name: Build and push Docker image
       uses: docker/build-push-action@v3
