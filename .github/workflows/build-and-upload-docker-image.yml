@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Java CI with Maven
+name: Development
 
 on:
   push:
@@ -20,6 +20,7 @@ jobs:
       contents: read
       packages: write
     runs-on: ubuntu-latest
+    environment: Development
 
     steps:
     - uses: actions/checkout@v3
