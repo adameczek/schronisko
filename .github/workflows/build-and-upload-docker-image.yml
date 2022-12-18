@@ -62,5 +62,5 @@ jobs:
       with:
         context: .
         push: true
-        tags: user/schronisko:latest
+        tags: adameczek/schronisko:latest
         labels: ${{ steps.meta.outputs.labels }}
