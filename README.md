@@ -27,7 +27,7 @@ docker pull ghcr.io/adameczek/schronisko:latest
         │   └── create-user.sh
         └── log
 ```
-7. Uruchom komende:
+7. Uruchom komende (ważne żeby być w folderze głównym repo):
 ```
 docker-compose --env-file "ŚCIEŻKA DO PLIKU .ENV" build
 docker-compose --env-file "C:\studia\inzynierka\docker\.env" up -d
