@@ -14,11 +14,19 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final PasswordEncoder passwordEncoder;
 
-	public User createUser(User user) {
+	public User createUser(User user) throws UserServiceException {
 		String encodedPassword = passwordEncoder.encode(user.getPassword());
 		user.setJoined(LocalDate.now());
 		user.setPassword(encodedPassword);
-		return userRepository.save(user);
+
+		try {
+			return userRepository.save(user);
+		}
+		catch (Exception e)
+		{
+			throw new UserServiceException(e);
+		}
+
 	}
 
 	public Page<User> getUsers(Pageable pageable) {
