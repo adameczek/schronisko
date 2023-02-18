@@ -37,7 +37,6 @@ public class JwtTokenProvider {
 	}
 
 	public String createToken(Authentication authentication) {
-
 		String username = authentication.getName();
 		Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 		Claims claims = Jwts.claims().setSubject(username);
@@ -48,8 +47,12 @@ public class JwtTokenProvider {
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + this.jwtProperties.getValidityInMs());
 
-		return Jwts.builder().setClaims(claims).setIssuedAt(now).setExpiration(validity)
-				.signWith(this.secretKey, SignatureAlgorithm.HS256).compact();
+		return Jwts.builder()
+				.setClaims(claims)
+				.setIssuedAt(now)
+				.setExpiration(validity)
+				.signWith(this.secretKey, SignatureAlgorithm.HS256)
+				.compact();
 
 	}
 

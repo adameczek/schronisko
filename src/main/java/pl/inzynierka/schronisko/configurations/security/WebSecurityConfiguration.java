@@ -1,90 +1,92 @@
 package pl.inzynierka.schronisko.configurations.security;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.authentication.ReactiveAuthenticationManager;
-import org.springframework.security.authentication.UserDetailsRepositoryReactiveAuthenticationManager;
-import org.springframework.security.authorization.AuthorizationDecision;
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
-import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
-import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
-import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.ReactiveUserDetailsService;
-import org.springframework.security.core.userdetails.User;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.server.SecurityWebFilterChain;
-import org.springframework.security.web.server.authorization.AuthorizationContext;
-import org.springframework.security.web.server.context.NoOpServerSecurityContextRepository;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import pl.inzynierka.schronisko.authentication.UserDetailsServiceImpl;
 import pl.inzynierka.schronisko.configurations.security.jwt.JwtTokenAuthenticationFilter;
 import pl.inzynierka.schronisko.configurations.security.jwt.JwtTokenProvider;
-import pl.inzynierka.schronisko.user.UserRepository;
-import reactor.core.publisher.Mono;
-
 
 /**
  * <a href="https://www.devglan.com/spring-security/spring-webflux-rest-authentication">How to</a>
  */
 @Configuration
-@EnableWebFluxSecurity
-@EnableReactiveMethodSecurity
+@EnableWebSecurity
+@EnableMethodSecurity(
+		// securedEnabled = true,
+		// jsr250Enabled = true,
+)
+@RequiredArgsConstructor
 public class WebSecurityConfiguration {
-	@Bean
-	SecurityWebFilterChain springWebFilterChain(ServerHttpSecurity http,
-	                                            JwtTokenProvider tokenProvider,
-	                                            ReactiveAuthenticationManager reactiveAuthenticationManager) {
-		final String PATH_POSTS = "/posts/**";
+	private final UserDetailsServiceImpl userDetailsService;
+	private final JwtTokenProvider jwtTokenProvider;
 
-		return http.csrf(ServerHttpSecurity.CsrfSpec::disable)
-				.httpBasic(ServerHttpSecurity.HttpBasicSpec::disable)
-				.authenticationManager(reactiveAuthenticationManager)
-				.securityContextRepository(NoOpServerSecurityContextRepository.getInstance())
-				.authorizeExchange(it -> it
-						.pathMatchers(HttpMethod.GET, PATH_POSTS).permitAll()
-						.pathMatchers(HttpMethod.DELETE, PATH_POSTS).hasRole("ADMIN")
-						.pathMatchers(PATH_POSTS).authenticated()
-						.pathMatchers("/login").permitAll()
-						.pathMatchers("/me").authenticated()
-						.pathMatchers("/users/{user}/**").access(this::currentUserMatchesPath)
-						.anyExchange().permitAll()
+
+	@Bean
+	public AuthenticationManager customAuthenticationManager(HttpSecurity http) throws Exception {
+		AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject
+				(AuthenticationManagerBuilder.class);
+		authenticationManagerBuilder.userDetailsService(userDetailsService)
+				.passwordEncoder(bCryptPasswordEncoder());
+		return authenticationManagerBuilder.build();
+	}
+
+	@Bean
+	public BCryptPasswordEncoder bCryptPasswordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		// @formatter:off
+		http
+				.authorizeHttpRequests((authorize) -> authorize
+						.requestMatchers("/login").permitAll()
+						.requestMatchers(HttpMethod.POST, "/users").permitAll()
+						.anyRequest().authenticated()
 				)
-				.addFilterAt(new JwtTokenAuthenticationFilter(tokenProvider), SecurityWebFiltersOrder.HTTP_BASIC)
-				.build();
+				.csrf(AbstractHttpConfigurer::disable)
+				.httpBasic(AbstractHttpConfigurer::disable)
+				.addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider),
+						UsernamePasswordAuthenticationFilter.class)
+				.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+				.exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
 
-
-	}
-
-	private Mono<AuthorizationDecision> currentUserMatchesPath(Mono<Authentication> authentication,
-	                                                           AuthorizationContext context) {
-
-		return authentication
-				.map(a -> context.getVariables().get("user").equals(a.getName()))
-				.map(AuthorizationDecision::new);
-
+		// @formatter:on
+		return http.build();
 	}
 
 	@Bean
-	public ReactiveUserDetailsService userDetailsService(UserRepository users) {
+	CorsConfigurationSource corsConfigurationSource() {
+		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-		return username -> users.findByUsername(username)
-				.map(u -> User
-						.withUsername(u.getUsername()).password(u.getPassword())
-						.authorities(u.getRoles().toArray(new String[0]))
-						.accountExpired(!u.isActive())
-						.credentialsExpired(!u.isActive())
-						.disabled(!u.isActive())
-						.accountLocked(!u.isActive())
-						.build()
-				);
+		CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+		source.registerCorsConfiguration("/**", corsConfiguration);
+
+		return source;
 	}
 
-	@Bean
-	public ReactiveAuthenticationManager reactiveAuthenticationManager(ReactiveUserDetailsService userDetailsService,
-	                                                                   PasswordEncoder passwordEncoder) {
-		var authenticationManager = new UserDetailsRepositoryReactiveAuthenticationManager(userDetailsService);
-		authenticationManager.setPasswordEncoder(passwordEncoder);
-
-		return authenticationManager;
-	}
 }

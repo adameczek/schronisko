@@ -2,19 +2,19 @@ package pl.inzynierka.schronisko.initialtest;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class HelloService {
     private final HelloRepository helloRepository;
 
-    public Mono<Hello> save(Hello hello) {
-        return helloRepository.save(hello);
-    }
+	public Hello save(Hello hello) {
+		return helloRepository.save(hello);
+	}
 
-    public Flux<Hello> findAll() {
-        return helloRepository.findAll();
-    }
+	public List<Hello> findAll() {
+		return helloRepository.findAll();
+	}
 }

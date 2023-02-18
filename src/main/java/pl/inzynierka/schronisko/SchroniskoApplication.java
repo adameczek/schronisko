@@ -3,10 +3,10 @@ package pl.inzynierka.schronisko;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.data.mongodb.repository.config.EnableReactiveMongoRepositories;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @SpringBootApplication
-@EnableReactiveMongoRepositories
+@EnableMongoRepositories
 @EnableConfigurationProperties
 public class SchroniskoApplication {
 
