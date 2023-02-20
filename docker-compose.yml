@@ -48,5 +48,4 @@ services:
 
 networks:
   main-network:
-    external: true
     name: $NETWORK_NAME
