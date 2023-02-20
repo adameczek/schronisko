@@ -22,10 +22,10 @@ services:
     command: [ "--bind_ip", "0.0.0.0" ]
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: $APP_NAME
+#    build: .
+#      context: .
+#      dockerfile: Dockerfile
+    image: $IMAGE_LINK
     container_name: $APP_NAME
     restart: on-failure
     depends_on:
@@ -48,5 +48,5 @@ services:
 
 networks:
   main-network:
-    external:
-      name: $NETWORK_NAME
+    external: true
+    name: $NETWORK_NAME
