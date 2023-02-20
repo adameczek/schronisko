@@ -1,4 +1,4 @@
-FROM amazoncorretto
+FROM amazoncorretto:17
 # Set the time zone for the container
 ENV TZ=Europe/Warsaw
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
