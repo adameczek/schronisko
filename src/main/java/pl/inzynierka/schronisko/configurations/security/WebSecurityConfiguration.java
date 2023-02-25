@@ -37,9 +37,11 @@ public class WebSecurityConfiguration {
 
 
     @Bean
-    public AuthenticationManager customAuthenticationManager(HttpSecurity http) throws Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject
-                (AuthenticationManagerBuilder.class);
+    public AuthenticationManager customAuthenticationManager(HttpSecurity http) throws
+            Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+                http.getSharedObject
+                        (AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userDetailsService)
                 .passwordEncoder(bCryptPasswordEncoder());
         return authenticationManagerBuilder.build();
@@ -57,14 +59,15 @@ public class WebSecurityConfiguration {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
+            Exception {
         // @formatter:off
         http
                 .authorizeHttpRequests((authorize) -> authorize
                         .requestMatchers("/swagger-ui/**",
-                                "/swagger-ui.html",
-                                "/api-docs",
-                                "/api-docs/**")
+                                         "/swagger-ui.html",
+                                         "/api-docs",
+                                         "/api-docs/**")
                         .permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
@@ -72,10 +75,13 @@ public class WebSecurityConfiguration {
                 )
                 .csrf(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
-                .addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider),
-                        UsernamePasswordAuthenticationFilter.class)
-                .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
+                .addFilterBefore(new JwtTokenAuthenticationFilter(
+                                         jwtTokenProvider),
+                                 UsernamePasswordAuthenticationFilter.class)
+                .sessionManagement((session) -> session.sessionCreationPolicy(
+                        SessionCreationPolicy.STATELESS))
+                .exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(
+                        HttpStatus.UNAUTHORIZED)));
 
         // @formatter:on
         return http.build();
@@ -83,9 +89,11 @@ public class WebSecurityConfiguration {
 
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
 
-        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+        CorsConfiguration corsConfiguration =
+                new CorsConfiguration().applyPermitDefaultValues();
         source.registerCorsConfiguration("/**", corsConfiguration);
 
         return source;

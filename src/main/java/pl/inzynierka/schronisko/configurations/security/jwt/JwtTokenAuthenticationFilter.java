@@ -24,7 +24,10 @@ public class JwtTokenAuthenticationFilter extends UsernamePasswordAuthentication
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
-    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+    public void doFilter(ServletRequest servletRequest,
+                         ServletResponse servletResponse,
+                         FilterChain filterChain) throws IOException,
+            ServletException {
         String token = resolveToken((HttpServletRequest) servletRequest);
         log.info("Extracting token from HttpServletRequest: {}", token);
 
@@ -32,7 +35,8 @@ public class JwtTokenAuthenticationFilter extends UsernamePasswordAuthentication
             Authentication auth = jwtTokenProvider.getAuthentication(token);
 
             if (null != auth && !(auth instanceof AnonymousAuthenticationToken)) {
-                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                SecurityContext context =
+                        SecurityContextHolder.createEmptyContext();
                 context.setAuthentication(auth);
                 SecurityContextHolder.setContext(context);
             }
@@ -43,7 +47,8 @@ public class JwtTokenAuthenticationFilter extends UsernamePasswordAuthentication
 
     private String resolveToken(HttpServletRequest request) {
         String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(HEADER_PREFIX)) {
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(
+                HEADER_PREFIX)) {
             return bearerToken.substring(7);
         }
         return null;
