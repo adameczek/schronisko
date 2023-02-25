@@ -23,29 +23,29 @@ public class JwtTokenAuthenticationFilter extends UsernamePasswordAuthentication
 	public static final String HEADER_PREFIX = "Bearer ";
 	private final JwtTokenProvider jwtTokenProvider;
 
-	private String resolveToken(HttpServletRequest request) {
-		String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(HEADER_PREFIX)) {
-			return bearerToken.substring(7);
-		}
-		return null;
-	}
-
 	@Override
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
-		String token = resolveToken((HttpServletRequest) servletRequest);
-		log.info("Extracting token from HttpServletRequest: {}", token);
+	public void doFilter(final ServletRequest servletRequest, final ServletResponse servletResponse, final FilterChain filterChain) throws IOException, ServletException {
+		final String token = this.resolveToken((HttpServletRequest) servletRequest);
+		JwtTokenAuthenticationFilter.log.info("Extracting token from HttpServletRequest: {}", token);
 
-		if (token != null && jwtTokenProvider.validateToken(token)) {
-			Authentication auth = jwtTokenProvider.getAuthentication(token);
+		if (null != token && this.jwtTokenProvider.validateToken(token)) {
+			final Authentication auth = this.jwtTokenProvider.getAuthentication(token);
 
-			if (auth != null && !(auth instanceof AnonymousAuthenticationToken)) {
-				SecurityContext context = SecurityContextHolder.createEmptyContext();
+			if (null != auth && !(auth instanceof AnonymousAuthenticationToken)) {
+				final SecurityContext context = SecurityContextHolder.createEmptyContext();
 				context.setAuthentication(auth);
 				SecurityContextHolder.setContext(context);
 			}
 		}
 
 		filterChain.doFilter(servletRequest, servletResponse);
+	}
+
+	private String resolveToken(final HttpServletRequest request) {
+		final String bearerToken = request.getHeader(HttpHeaders.AUTHORIZATION);
+		if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(JwtTokenAuthenticationFilter.HEADER_PREFIX)) {
+			return bearerToken.substring(7);
+		}
+		return null;
 	}
 }

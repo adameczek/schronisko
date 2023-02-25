@@ -10,14 +10,14 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RolesAllowed({"USER"})
+@RolesAllowed("USER")
 public class HelloController {
 	private final HelloService helloService;
 
 	@GetMapping("/hello")
 	public ResponseEntity<List<Hello>> hello() {
-		helloService.save(new Hello(null, "dsodaso"));
+		this.helloService.save(new Hello(null, "dsodaso"));
 
-		return ResponseEntity.ok(helloService.findAll());
+		return ResponseEntity.ok(this.helloService.findAll());
 	}
 }

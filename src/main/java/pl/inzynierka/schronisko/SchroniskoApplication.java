@@ -12,7 +12,7 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 @ConfigurationPropertiesScan
 public class SchroniskoApplication {
 
-	public static void main(String[] args) {
+	public static void main(final String[] args) {
 		SpringApplication.run(SchroniskoApplication.class, args);
 	}
 }

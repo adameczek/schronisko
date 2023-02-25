@@ -28,47 +28,47 @@ public class UserService {
 	private final MongoTemplate mongoTemplate;
 	private final FindAndModifyOptions findAndModifyOptions;
 
-	public User createUser(User user) throws UserServiceException {
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
+	public User createUser(final User user) throws UserServiceException {
+		final String encodedPassword = this.passwordEncoder.encode(user.getPassword());
 		user.setJoined(LocalDate.now());
 		user.setPassword(encodedPassword);
 
 		try {
-			return userRepository.save(user);
-		} catch (DuplicateKeyException e) {
+			return this.userRepository.save(user);
+		} catch (final DuplicateKeyException e) {
 			throw new UserServiceException("User with that username or email already exists!");
-		} catch (Exception e) {
+		} catch (final Exception e) {
 			throw new UserServiceException(e);
 		}
 
 	}
 
-	public Page<User> getUsers(Pageable pageable) {
-		return userRepository.findAll(pageable);
+	public Page<User> getUsers(final Pageable pageable) {
+		return this.userRepository.findAll(pageable);
 	}
 
-	public Optional<User> findByUsername(String username) {
-		return userRepository.findByUsername(username);
+	public Optional<User> findByUsername(final String username) {
+		return this.userRepository.findByUsername(username);
 	}
 
-	public User updateUser(String username, User user, User userDetails) throws UserServiceException {
+	public User updateUser(final String username, final User user, final User userDetails) throws UserServiceException {
 		if (!username.equals(userDetails.getUsername()) && !userDetails.getRoles().contains(Role.ADMIN))
 			throw new UserServiceException("Insufficient permissions to edit this user!");
 
-		ObjectMapper ob = new ObjectMapper();
-		Query query = new Query();
+		final ObjectMapper ob = new ObjectMapper();
+		final Query query = new Query();
 		query.addCriteria(Criteria.where("username").is(username));
-		Update update = new Update();
+		final Update update = new Update();
 
-		Map<String, Object> userFieldsMap = ob.convertValue(user, Map.class);
+		final Map<String, Object> userFieldsMap = ob.convertValue(user, Map.class);
 		userFieldsMap.entrySet().stream()
-				.filter(keyValue -> settings.getEditableFields().contains(keyValue.getKey()))
+				.filter(keyValue -> this.settings.getEditableFields().contains(keyValue.getKey()))
 				.filter(keyValue -> Objects.nonNull(keyValue.getValue()))
 				.forEach(keyValue -> update.set(keyValue.getKey(), keyValue.getValue()));
 
-		User modifiedUser = mongoTemplate.findAndModify(query, update, findAndModifyOptions, User.class);
+		final User modifiedUser = this.mongoTemplate.findAndModify(query, update, this.findAndModifyOptions, User.class);
 
-		if (modifiedUser == null)
+		if (null == modifiedUser)
 			throw new UserServiceException("User for modifying has not been found!");
 
 		return modifiedUser;

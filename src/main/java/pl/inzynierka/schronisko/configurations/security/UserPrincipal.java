@@ -2,34 +2,32 @@ package pl.inzynierka.schronisko.configurations.security;
 
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import pl.inzynierka.schronisko.user.Role;
 import pl.inzynierka.schronisko.user.User;
 
 import java.util.Collection;
 
 public class UserPrincipal implements UserDetails {
 	@Getter
-	private User user;
+	private final User user;
 
-	public UserPrincipal(User user) {
+	public UserPrincipal(final User user) {
 		this.user = user;
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return user.getRoles();
+		return this.user.getRoles();
 	}
 
 	@Override
 	public String getPassword() {
-		return user.getPassword();
+		return this.user.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return user.getUsername();
+		return this.user.getUsername();
 	}
 
 	@Override

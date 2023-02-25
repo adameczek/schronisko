@@ -37,11 +37,11 @@ public class WebSecurityConfiguration {
 
 
 	@Bean
-	public AuthenticationManager customAuthenticationManager(HttpSecurity http) throws Exception {
-		AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject
+	public AuthenticationManager customAuthenticationManager(final HttpSecurity http) throws Exception {
+		final AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject
 				(AuthenticationManagerBuilder.class);
-		authenticationManagerBuilder.userDetailsService(userDetailsService)
-				.passwordEncoder(bCryptPasswordEncoder());
+		authenticationManagerBuilder.userDetailsService(this.userDetailsService)
+				.passwordEncoder(this.bCryptPasswordEncoder());
 		return authenticationManagerBuilder.build();
 	}
 
@@ -57,7 +57,7 @@ public class WebSecurityConfiguration {
 	}
 
 	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+	public SecurityFilterChain securityFilterChain(final HttpSecurity http) throws Exception {
 		// @formatter:off
 		http
 				.authorizeHttpRequests((authorize) -> authorize
@@ -67,7 +67,7 @@ public class WebSecurityConfiguration {
 				)
 				.csrf(AbstractHttpConfigurer::disable)
 				.httpBasic(AbstractHttpConfigurer::disable)
-				.addFilterBefore(new JwtTokenAuthenticationFilter(jwtTokenProvider),
+				.addFilterBefore(new JwtTokenAuthenticationFilter(this.jwtTokenProvider),
 						UsernamePasswordAuthenticationFilter.class)
 				.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.exceptionHandling(c -> c.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)));
@@ -78,9 +78,9 @@ public class WebSecurityConfiguration {
 
 	@Bean
 	CorsConfigurationSource corsConfigurationSource() {
-		final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
-		CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
+		final CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
 		source.registerCorsConfiguration("/**", corsConfiguration);
 
 		return source;

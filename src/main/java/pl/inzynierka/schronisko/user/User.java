@@ -30,7 +30,7 @@ public class User {
 	@Size(min = 1, max = 50)
 	private String username;
 	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	@NotBlank()
+	@NotBlank
 	@Size(min = 8, max = 100)
 	private String password;
 	@Indexed(unique = true)

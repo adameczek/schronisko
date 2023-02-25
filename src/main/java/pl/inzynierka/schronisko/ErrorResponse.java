@@ -13,7 +13,7 @@ public class ErrorResponse {
 	private final LocalDateTime date;
 	private final String error;
 
-	public static ErrorResponse now(String error) {
+	public static ErrorResponse now(final String error) {
 		return new ErrorResponse(LocalDateTime.now(), error);
 	}
 }
