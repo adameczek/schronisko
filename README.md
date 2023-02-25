@@ -1,15 +1,19 @@
 # schronisko
 
 ## Konfiguracja lokalnie
+
 1. Sklonuj repo
 2. Zainstaluj dockera
 3. Ściągnij apke
+
   ```
 docker pull ghcr.io/adameczek/schronisko:latest
 ```
-4. Ściągnij mongo w dockerze
-5. Pobierz plik .env (Napisz do mnie i Ci go udostępnie)
-6. Utwórz taką strukture folderów:
+
+1. Ściągnij mongo w dockerze
+2. Pobierz plik .env (Napisz do mnie i Ci go udostępnie)
+3. Utwórz taką strukture folderów:
+
 ```
 .
   .env
@@ -27,10 +31,13 @@ docker pull ghcr.io/adameczek/schronisko:latest
         │   └── create-user.sh
         └── log
 ```
-7. Uruchom komende (ważne żeby być w folderze głównym repo):
+
+1. Uruchom komende:
+
 ```
 docker-compose --env-file "ŚCIEŻKA DO PLIKU .ENV" build
 docker-compose --env-file "C:\studia\inzynierka\docker\.env" up -d
 ```
-8. sprawdź czy apka działa robiąc request 
-```GET localhost:25000/hello```
+
+1. sprawdź czy apka działa robiąc request
+   ```GET localhost:25000/hello```

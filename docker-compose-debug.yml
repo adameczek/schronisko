@@ -16,7 +16,7 @@ services:
     volumes:
       - $MONGO_DATA_HOST_PATH:/data/db/
       - $MONGO_LOG_HOST_PATH:/var/log/mongodb/
-      - $MONGO_INITDB_SCRIPTS_HOST_PATH:/docker-entrypoint-initdb.d/
+      - $MONGO_INITDB_SCRIPTS_HOST_PATH:/docker-entrypoint-initdb.d/create-user.sh
     networks:
       - main-network
     command: [ "--bind_ip", "0.0.0.0" ]
@@ -25,13 +25,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: $APP_NAME
+    #    image: $IMAGE_LINK
     container_name: $APP_NAME
     restart: on-failure
     depends_on:
       - mongo
     ports:
       - $SERVER_HOST_PORT:8000
+      - '5005:5005'
     environment:
       - SERVER_PORT=8000
       - SPRING_PROFILES_ACTIVE=prod
@@ -43,10 +44,11 @@ services:
       - SPRING_DATA_MONGODB_USERNAME=$MONGO_DB_USERNAME
       - SPRING_DATA_MONGODB_PASSWORD=$MONGO_DB_PASSWORD
       - SPRING_DATA_MONGODB_DATABASE=$MONGO_DB
+      - JAVA_TOOL_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
     networks:
       - main-network
 
 networks:
   main-network:
-    external:
-      name: $NETWORK_NAME
+    name: $NETWORK_NAME
+    driver: bridge
