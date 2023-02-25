@@ -23,7 +23,7 @@ public class AuthenticationController {
 		return authenticationService.login(authRequest);
 	}
 
-	@ExceptionHandler({AuthenticationException.class})
+	@ExceptionHandler({Exception.class})
 	public ResponseEntity<ErrorResponse> errorRes(Exception ex, WebRequest request) {
 		return ResponseEntity.badRequest().body(new ErrorResponse(LocalDateTime.now(), ex.getMessage()));
 	}

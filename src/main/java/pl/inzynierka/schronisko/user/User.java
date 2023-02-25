@@ -44,7 +44,7 @@ public class User {
 	@Indexed
 	private LocalDate joined;
 	@Builder.Default
-	private List<Roles> roles = new ArrayList<>(List.of(Roles.USER));
+	private List<Role> roles = new ArrayList<>(List.of(Role.USER));
 	@Builder.Default
 	private boolean active = true;
 }

@@ -3,23 +3,56 @@ package pl.inzynierka.schronisko.user;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import pl.inzynierka.schronisko.ErrorResponse;
+import pl.inzynierka.schronisko.configurations.security.UserPrincipal;
 
+import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+
 public class UserController {
 	private final UserService userService;
+
+	@GetMapping
+	@PreAuthorize("hasAuthority('USER')")
+	ResponseEntity<Page<User>> getUsers(Pageable pageable) {
+		return ResponseEntity.ok(userService.getUsers(pageable));
+	}
+
+	@GetMapping("/me")
+	@PreAuthorize("hasAuthority('USER')")
+	ResponseEntity<User> getLoggedUser(Principal userPrincipal) {
+		return getUser(userPrincipal.getName());
+	}
+
+	@GetMapping("/{username}")
+	@PreAuthorize("hasAuthority('USER')")
+	ResponseEntity<User> getUser(@PathVariable String username) {
+		Optional<User> user = userService.findByUsername(username);
+
+		if (user.isPresent()) {
+			return ResponseEntity.ok(user.get());
+		} else {
+			return ResponseEntity.notFound().build();
+		}
+	}
 
 	@SneakyThrows
 	@PostMapping

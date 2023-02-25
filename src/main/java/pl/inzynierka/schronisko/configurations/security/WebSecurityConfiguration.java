@@ -29,10 +29,7 @@ import pl.inzynierka.schronisko.configurations.security.jwt.JwtTokenProvider;
  */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(
-		// securedEnabled = true,
-		// jsr250Enabled = true,
-)
+@EnableMethodSecurity(securedEnabled = true)
 @RequiredArgsConstructor
 public class WebSecurityConfiguration {
 	private final UserDetailsServiceImpl userDetailsService;
