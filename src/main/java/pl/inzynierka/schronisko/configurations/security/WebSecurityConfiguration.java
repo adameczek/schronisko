@@ -61,6 +61,11 @@ public class WebSecurityConfiguration {
         // @formatter:off
         http
                 .authorizeHttpRequests((authorize) -> authorize
+                        .requestMatchers("/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/api-docs",
+                                "/api-docs/**")
+                        .permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/users").permitAll()
                         .anyRequest().authenticated()
