@@ -36,7 +36,8 @@ public class UserService {
         try {
             return userRepository.save(user);
         } catch (DuplicateKeyException e) {
-            throw new UserServiceException("User with that username or email already exists!");
+            throw new UserServiceException(
+                    "User with that username or email already exists!");
         } catch (Exception e) {
             throw new UserServiceException(e);
         }
@@ -51,9 +52,12 @@ public class UserService {
         return userRepository.findByUsername(username);
     }
 
-    public User updateUser(String username, User user, User userDetails) throws UserServiceException {
-        if (!username.equals(userDetails.getUsername()) && !userDetails.getRoles().contains(Role.ADMIN))
-            throw new UserServiceException("Insufficient permissions to edit this user!");
+    public User updateUser(String username, User user, User userDetails) throws
+            UserServiceException {
+        if (!username.equals(userDetails.getUsername()) && !userDetails.getRoles()
+                .contains(Role.ADMIN))
+            throw new UserServiceException(
+                    "Insufficient permissions to edit this user!");
 
         ObjectMapper ob = new ObjectMapper();
         Query query = new Query();
@@ -62,14 +66,20 @@ public class UserService {
 
         Map<String, Object> userFieldsMap = ob.convertValue(user, Map.class);
         userFieldsMap.entrySet().stream()
-                .filter(keyValue -> settings.getEditableFields().contains(keyValue.getKey()))
+                .filter(keyValue -> settings.getEditableFields()
+                        .contains(keyValue.getKey()))
                 .filter(keyValue -> Objects.nonNull(keyValue.getValue()))
-                .forEach(keyValue -> update.set(keyValue.getKey(), keyValue.getValue()));
+                .forEach(keyValue -> update.set(keyValue.getKey(),
+                                                keyValue.getValue()));
 
-        User modifiedUser = mongoTemplate.findAndModify(query, update, findAndModifyOptions, User.class);
+        User modifiedUser = mongoTemplate.findAndModify(query,
+                                                        update,
+                                                        findAndModifyOptions,
+                                                        User.class);
 
         if (null == modifiedUser)
-            throw new UserServiceException("User for modifying has not been found!");
+            throw new UserServiceException(
+                    "User for modifying has not been found!");
 
         return modifiedUser;
     }

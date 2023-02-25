@@ -17,11 +17,15 @@ public class AuthenticationService {
 
     public ResponseEntity<AuthResponse> login(final AuthRequest request) {
         final Authentication authenticate =
-                this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),
+                this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
                         request.getPassword()));
 
         final String token = this.jwtTokenProvider.createToken(authenticate);
 
-        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).body(new AuthResponse(token));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION,
+                        "Bearer " + token)
+                .body(new AuthResponse(token));
     }
 }

@@ -16,7 +16,10 @@ public class UserServiceException extends Exception {
         super(cause);
     }
 
-    public UserServiceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public UserServiceException(String message,
+                                Throwable cause,
+                                boolean enableSuppression,
+                                boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -24,3 +24,8 @@ settings:
       - firstname
       - lastname
       - roles
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
