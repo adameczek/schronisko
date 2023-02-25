@@ -7,15 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import pl.inzynierka.schronisko.ErrorResponse;
-import pl.inzynierka.schronisko.configurations.security.UserPrincipal;
 
 import java.security.Principal;
 import java.time.LocalDateTime;
@@ -47,12 +46,18 @@ public class UserController {
 	ResponseEntity<User> getUser(@PathVariable String username) {
 		Optional<User> user = userService.findByUsername(username);
 
-		if (user.isPresent()) {
-			return ResponseEntity.ok(user.get());
-		} else {
-			return ResponseEntity.notFound().build();
-		}
+		return user.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
 	}
+
+	@PutMapping("/{username}")
+	@PreAuthorize("hasAuthority('USER')")
+	ResponseEntity<User> updateUser(@PathVariable String username, @RequestBody User user) throws UserServiceException {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		User userDetails = (User) authentication.getPrincipal();
+
+		return ResponseEntity.ok(userService.updateUser(username, user, userDetails));
+	}
+
 
 	@SneakyThrows
 	@PostMapping

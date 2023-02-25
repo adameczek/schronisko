@@ -9,8 +9,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Component;
+import pl.inzynierka.schronisko.user.Role;
+import pl.inzynierka.schronisko.user.User;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -64,9 +65,11 @@ public class JwtTokenProvider {
 		Collection<? extends GrantedAuthority> authorities = authoritiesClaim == null ? AuthorityUtils.NO_AUTHORITIES :
 				AuthorityUtils.commaSeparatedStringToAuthorityList(authoritiesClaim.toString());
 
-		User principal = new User(claims.getSubject(), "", authorities);
-
-		return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+		User user = User.builder().username(claims.getSubject())
+				.password("")
+				.roles(authorities.stream().map(grantedAuthority -> Role.valueOf(grantedAuthority.getAuthority())).toList())
+				.build();
+		return new UsernamePasswordAuthenticationToken(user, token, authorities);
 	}
 
 	public boolean validateToken(String token) {

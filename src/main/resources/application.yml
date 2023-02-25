@@ -1,0 +1,26 @@
+security:
+  user:
+    name: myuser
+    password: mypassword
+spring:
+  data:
+    mongodb:
+      auto-index-creation: 'true'
+      authentication-database: admin
+      database: schronisko
+      port: '27017'
+      host: localhost
+  devtools:
+    restart:
+      quiet-period: 1s
+      poll-interval: 2s
+  main:
+    web-application-type: SERVLET
+settings:
+  user-service:
+    editable-fields:
+      - password
+      - email
+      - firstname
+      - lastname
+      - roles
