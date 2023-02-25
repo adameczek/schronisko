@@ -18,12 +18,12 @@ public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 
 	@PostMapping("/login")
-	public ResponseEntity<AuthResponse> login(@RequestBody final AuthRequest authRequest) {
-		return this.authenticationService.login(authRequest);
+	public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest authRequest) {
+		return authenticationService.login(authRequest);
 	}
 
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorResponse> errorRes(final Exception ex, final WebRequest request) {
+	public ResponseEntity<ErrorResponse> errorRes(Exception ex, WebRequest request) {
 		return ResponseEntity.badRequest().body(new ErrorResponse(LocalDateTime.now(), ex.getMessage()));
 	}
 }

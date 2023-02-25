@@ -23,28 +23,28 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
 
-	@Id
-	public ObjectId id;
-	@NotBlank(message = "Username can't be empty")
-	@Indexed(unique = true)
-	@Size(min = 1, max = 50)
-	private String username;
-	@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-	@NotBlank
-	@Size(min = 8, max = 100)
-	private String password;
-	@Indexed(unique = true)
-	@NotBlank
-	@Size(min = 1, max = 100)
-	private String email;
-	@Size(min = 1, max = 100)
-	private String firstname;
-	@Size(min = 1, max = 100)
-	private String lastname;
-	@Indexed
-	private LocalDate joined;
-	@Builder.Default
-	private List<Role> roles = new ArrayList<>(List.of(Role.USER));
-	@Builder.Default
-	private boolean active = true;
+    @Id
+    public ObjectId id;
+    @NotBlank(message = "Username can't be empty")
+    @Indexed(unique = true)
+    @Size(min = 1, max = 50)
+    private String username;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotBlank
+    @Size(min = 8, max = 100)
+    private String password;
+    @Indexed(unique = true)
+    @NotBlank
+    @Size(min = 1, max = 100)
+    private String email;
+    @Size(min = 1, max = 100)
+    private String firstname;
+    @Size(min = 1, max = 100)
+    private String lastname;
+    @Indexed
+    private LocalDate joined;
+    @Builder.Default
+    private List<Role> roles = new ArrayList<>(List.of(Role.USER));
+    @Builder.Default
+    private boolean active = true;
 }

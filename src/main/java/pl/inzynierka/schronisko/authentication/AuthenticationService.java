@@ -12,16 +12,16 @@ import pl.inzynierka.schronisko.configurations.security.jwt.JwtTokenProvider;
 @RequiredArgsConstructor
 @Component
 public class AuthenticationService {
-	private final JwtTokenProvider jwtTokenProvider;
-	private final AuthenticationManager authenticationManager;
+    private final JwtTokenProvider jwtTokenProvider;
+    private final AuthenticationManager authenticationManager;
 
-	public ResponseEntity<AuthResponse> login(final AuthRequest request) {
-		final Authentication authenticate =
-				this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),
-						request.getPassword()));
+    public ResponseEntity<AuthResponse> login(final AuthRequest request) {
+        final Authentication authenticate =
+                this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(),
+                        request.getPassword()));
 
-		final String token = this.jwtTokenProvider.createToken(authenticate);
+        final String token = this.jwtTokenProvider.createToken(authenticate);
 
-		return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).body(new AuthResponse(token));
-	}
+        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + token).body(new AuthResponse(token));
+    }
 }

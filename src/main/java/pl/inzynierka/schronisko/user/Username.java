@@ -9,5 +9,5 @@ import lombok.*;
 @AllArgsConstructor(onConstructor = @__({@JsonCreator}))
 @ToString
 public class Username {
-	private String username;
+    private String username;
 }

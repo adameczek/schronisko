@@ -7,27 +7,21 @@ import pl.inzynierka.schronisko.user.User;
 
 import java.util.Collection;
 
-public class UserPrincipal implements UserDetails {
-	@Getter
-	private final User user;
-
-	public UserPrincipal(final User user) {
-		this.user = user;
-	}
+public record UserPrincipal(@Getter User user) implements UserDetails {
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return this.user.getRoles();
+		return user.getRoles();
 	}
 
 	@Override
 	public String getPassword() {
-		return this.user.getPassword();
+		return user.getPassword();
 	}
 
 	@Override
 	public String getUsername() {
-		return this.user.getUsername();
+		return user.getUsername();
 	}
 
 	@Override

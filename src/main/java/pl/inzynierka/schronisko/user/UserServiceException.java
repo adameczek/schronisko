@@ -1,22 +1,22 @@
 package pl.inzynierka.schronisko.user;
 
 public class UserServiceException extends Exception {
-	public UserServiceException() {
-	}
+    public UserServiceException() {
+    }
 
-	public UserServiceException(final String message) {
-		super(message);
-	}
+    public UserServiceException(String message) {
+        super(message);
+    }
 
-	public UserServiceException(final String message, final Throwable cause) {
-		super(message, cause);
-	}
+    public UserServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public UserServiceException(final Throwable cause) {
-		super(cause);
-	}
+    public UserServiceException(Throwable cause) {
+        super(cause);
+    }
 
-	public UserServiceException(final String message, final Throwable cause, final boolean enableSuppression, final boolean writableStackTrace) {
-		super(message, cause, enableSuppression, writableStackTrace);
-	}
+    public UserServiceException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }
