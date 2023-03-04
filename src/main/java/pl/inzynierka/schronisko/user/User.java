@@ -9,7 +9,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -17,6 +16,7 @@ import pl.inzynierka.schronisko.user.validators.ValidPassword;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @AllArgsConstructor
@@ -28,7 +28,7 @@ public class User {
 
     @Id
     @Schema(description = "Unique identifier of the contact.", example = "1")
-    public ObjectId id;
+    public String id;
     @NotBlank(message = "Username can't be empty")
     @Indexed(unique = true)
     @Size(min = 1, max = 50)
@@ -60,4 +60,17 @@ public class User {
     @Builder.Default
     @Schema(description = "Is user account active")
     private boolean active = true;
+
+    public boolean hasRoles(Role... roles) {
+        return Arrays.stream(roles).allMatch(role -> getRoles().contains(role));
+    }
+
+    public boolean hasNoRoles(Role... roles) {
+        return Arrays.stream(roles)
+                .noneMatch(role -> getRoles().contains(role));
+    }
+
+    public boolean hasAnyRole(Role... roles) {
+        return Arrays.stream(roles).anyMatch(role -> getRoles().contains(role));
+    }
 }
