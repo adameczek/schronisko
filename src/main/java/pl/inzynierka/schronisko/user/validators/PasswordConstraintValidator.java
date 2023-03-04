@@ -18,17 +18,10 @@ public class PasswordConstraintValidator implements ConstraintValidator<ValidPas
                            ConstraintValidatorContext context) {
         PasswordValidator
                 validator = new PasswordValidator(Arrays.asList(
-                new LengthRule(8, 30),
+                new LengthRule(8, 500),
                 new CharacterRule(EnglishCharacterData.UpperCase, 1),
                 new CharacterRule(EnglishCharacterData.Digit, 1),
                 new CharacterRule(EnglishCharacterData.Special, 1),
-                new IllegalSequenceRule(EnglishSequenceData.Alphabetical,
-                                        3,
-                                        false),
-                new IllegalSequenceRule(EnglishSequenceData.Numerical,
-                                        3,
-                                        false),
-                new IllegalSequenceRule(EnglishSequenceData.USQwerty, 3, false),
                 new WhitespaceRule()));
 
         RuleResult result = validator.validate(new PasswordData(password));
