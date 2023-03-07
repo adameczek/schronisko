@@ -13,15 +13,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import pl.inzynierka.schronisko.ErrorResponse;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -88,18 +84,6 @@ public class UserController {
         return ResponseEntity.ok(this.userService.createUser(user));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<Map<String, String>> onNonValidRequest(
-            final MethodArgumentNotValidException e,
-            final WebRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        e.getBindingResult().getAllErrors().forEach((error) -> {
-            final String fieldName = ((FieldError) error).getField();
-            final String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return ResponseEntity.badRequest().body(errors);
-    }
 
     @ExceptionHandler(UserServiceException.class)
     ResponseEntity<ErrorResponse> userServiceError(final UserServiceException e,

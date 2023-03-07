@@ -1,0 +1,13 @@
+spring:
+  data:
+    mongodb:
+      username: test
+      password: pass
+  main:
+    allow-bean-definition-overriding: false
+name: test
+de:
+  flapdoodle:
+    mongodb:
+      embedded:
+        version: 5.0.0

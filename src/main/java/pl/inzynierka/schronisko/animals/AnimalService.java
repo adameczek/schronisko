@@ -13,15 +13,13 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import pl.inzynierka.schronisko.SimpleResponse;
-import pl.inzynierka.schronisko.animals.tags.AnimalTag;
-import pl.inzynierka.schronisko.animals.tags.AnimalTagsRepository;
-import pl.inzynierka.schronisko.animals.types.AnimalTypesRepository;
 import pl.inzynierka.schronisko.authentication.AuthenticationUtils;
 import pl.inzynierka.schronisko.user.Role;
 import pl.inzynierka.schronisko.user.User;
 
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,14 +27,17 @@ import java.util.Objects;
 public class AnimalService {
     private final AnimalsRepository animalsRepository;
     private final MongoTemplate mongoTemplate;
-    private final AnimalTagsRepository animalTagsRepository;
-    private final AnimalTypesRepository animalTypesRepository;
-
     private final FindAndModifyOptions findAndModifyOptions;
     private final ObjectMapper objectMapper;
 
     public Page<Animal> getAnimals(Pageable pageable) {
+        //todo limit sent data
+
         return animalsRepository.findAll(pageable);
+    }
+
+    public Optional<Animal> getAnimalById(String id) {
+        return animalsRepository.findById(id);
     }
 
     public Animal createAnimal(Animal animal) throws
@@ -92,13 +93,14 @@ public class AnimalService {
         return updatedAnimal;
     }
 
-    public SimpleResponse deleteAnimal(String id) {
+    public SimpleResponse deleteAnimal(String id) throws
+            InsufficentUserRoleException {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
 
         if (authenticatedUser.hasNoRoles(Role.ADMIN, Role.MODERATOR)) {
             throw new InsufficentUserRoleException(
-                    "Cannot delete animal if user is not at least moderator.")
+                    "Cannot delete animal if user is not at least moderator.");
         }
 
         final var query = new Query();
@@ -112,23 +114,4 @@ public class AnimalService {
 
         return new SimpleResponse(true, null);
     }
-
-    public Page<AnimalTag> getAllTags(Pageable pageable) {
-        return animalTagsRepository.findAll(pageable);
-    }
-
-    public AnimalTag saveTag(AnimalTag animalTag) throws
-            InsufficentUserRoleException {
-        final User authenticatedUser =
-                AuthenticationUtils.getAuthenticatedUser();
-
-        if (authenticatedUser.hasNoRoles(Role.ADMIN, Role.MODERATOR)) {
-            throw new InsufficentUserRoleException(
-                    "To create tags you need at least moderator role!");
-        }
-
-        return animalTagsRepository.save(animalTag);
-    }
-
-    public
 }

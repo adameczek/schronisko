@@ -28,7 +28,7 @@ public class User {
 
     @Id
     @Schema(description = "Unique identifier of the contact.", example = "1")
-    public String id;
+    private String id;
     @NotBlank(message = "Username can't be empty")
     @Indexed(unique = true)
     @Size(min = 1, max = 50)
