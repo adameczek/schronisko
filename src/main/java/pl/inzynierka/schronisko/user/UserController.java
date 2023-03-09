@@ -3,6 +3,8 @@ package pl.inzynierka.schronisko.user;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springdoc.core.annotations.ParameterObject;
@@ -15,10 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
-import pl.inzynierka.schronisko.ErrorResponse;
-
-import java.time.LocalDateTime;
-import java.util.Optional;
+import pl.inzynierka.schronisko.common.ErrorResponse;
 
 @RestController
 @RequiredArgsConstructor
@@ -90,12 +89,5 @@ public class UserController {
                                                    final WebRequest request) {
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(LocalDateTime.now(), e.getMessage()));
-    }
-
-    @ExceptionHandler(Exception.class)
-    ResponseEntity<ErrorResponse> handleAnyException(final Exception e,
-                                                     final WebRequest request) {
-        return ResponseEntity.badRequest()
-                .body(ErrorResponse.now(e.getMessage()));
     }
 }

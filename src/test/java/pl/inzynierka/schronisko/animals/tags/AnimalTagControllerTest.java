@@ -1,50 +1,103 @@
 package pl.inzynierka.schronisko.animals.tags;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import lombok.NoArgsConstructor;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.web.context.WebApplicationContext;
 import pl.inzynierka.schronisko.SchroniskoApplication;
-import pl.inzynierka.schronisko.authentication.AuthRequest;
-import pl.inzynierka.schronisko.authentication.AuthResponse;
+import pl.inzynierka.schronisko.SetUp;
+import pl.inzynierka.schronisko.TestUtils;
 import pl.inzynierka.schronisko.authentication.AuthenticationService;
-import pl.inzynierka.schronisko.configuration.TestConfiguration;
+import pl.inzynierka.schronisko.user.UserService;
+import pl.inzynierka.schronisko.user.UserServiceException;
+import reactor.core.publisher.Mono;
 
 @SpringBootTest(
-        webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
-        classes = SchroniskoApplication.class
-)
-@Import(TestConfiguration.class)
+    webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
+    classes = SchroniskoApplication.class)
 @AutoConfigureDataMongo
+@NoArgsConstructor
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AnimalTagControllerTest {
+  @Autowired WebTestClient client;
+  String moderatorToken;
+  String userToken;
+  @Autowired UserService userService;
+  @Autowired private AuthenticationService authenticationService;
 
-    WebTestClient client;
-    String token;
-    @Autowired
-    private AuthenticationService authenticationService;
+  @BeforeAll
+  void setUp(WebApplicationContext applicationContext) throws UserServiceException {
+    SetUp.UserSetup.initUsersInDb(userService);
+    moderatorToken = TestUtils.loginAndGetToken(authenticationService, "moderator");
+    userToken = TestUtils.loginAndGetToken(authenticationService, "userek");
+  }
 
-    @BeforeEach
-    void setUp(ApplicationContext applicationContext) {
-        AuthResponse login = authenticationService.login(new AuthRequest(
-                "moderator",
-                "1234"));
-        token = login.getToken();
+  @Test
+  @Order(1)
+  void saveTag() {
+    String tagValue = "test";
+    client
+        .post()
+        .uri("/animals/tags")
+        .body(Mono.just(AnimalTag.builder().value(tagValue).build()), AnimalTag.class)
+        .headers(httpHeaders -> httpHeaders.setBearerAuth(moderatorToken))
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody()
+        .jsonPath("$.value")
+        .isEqualTo(tagValue);
+  }
 
-        client = WebTestClient.bindToApplicationContext(applicationContext)
-                .configureClient()
-                .defaultHeaders(httpHeaders -> httpHeaders.setBearerAuth(token))
-                .build();
-    }
+  @Test
+  @Order(2)
+  void tryToCreateTagAsUser() {
+    client
+        .post()
+        .uri("/animals/tags")
+        .body(Mono.just(AnimalTag.builder().value("nowy tag od usera").build()), AnimalTag.class)
+        .headers(httpHeaders -> httpHeaders.setBearerAuth(userToken))
+        .exchange()
+        .expectStatus()
+        .is4xxClientError();
+  }
 
-    @Test
-    void getAllTags() throws Exception {
-        WebTestClient.ResponseSpec exchange = client.get()
-                .uri("/animals/tags").exchange();
+  @Test
+  @Order(3)
+  void tryToCreateExistingTag() {
+    String tagValue = "test";
+    client
+        .post()
+        .uri("/animals/tags")
+        .body(Mono.just(AnimalTag.builder().value(tagValue).build()), AnimalTag.class)
+        .headers(httpHeaders -> httpHeaders.setBearerAuth(moderatorToken))
+        .exchange()
+        .expectStatus()
+        .is4xxClientError()
+        .expectBody()
+        .jsonPath("$.date")
+        .exists()
+        .jsonPath("$.error");
+  }
 
-        exchange.expectStatus().is2xxSuccessful();
-    }
+  @Test
+  @Order(4)
+  void getAllTags() {
+    client
+        .get()
+        .uri("/animals/tags")
+        .headers(httpHeaders -> httpHeaders.setBearerAuth(moderatorToken))
+        .exchange()
+        .expectStatus()
+        .is2xxSuccessful()
+        .expectBody()
+        .jsonPath("$.totalElements")
+        .isEqualTo(1)
+        .jsonPath("$.content[0].value")
+        .isEqualTo("test");
+  }
 }

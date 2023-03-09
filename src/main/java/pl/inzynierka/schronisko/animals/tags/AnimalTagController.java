@@ -11,8 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import pl.inzynierka.schronisko.SimpleResponse;
 import pl.inzynierka.schronisko.animals.InsufficentUserRoleException;
+import pl.inzynierka.schronisko.common.SimpleResponse;
 
 @RestController
 @AllArgsConstructor
@@ -22,36 +22,32 @@ import pl.inzynierka.schronisko.animals.InsufficentUserRoleException;
 public class AnimalTagController {
     private final AnimalTagService service;
 
-    @GetMapping
-    @PreAuthorize("hasAuthority('User')")
-    @Operation(
-            summary = "Gets tags",
-            description = "Gets paginated animal tags",
-            tags = {"animals", "tags"}
-    )
-    public ResponseEntity<Page<AnimalTag>> getAllTags(
-            @ParameterObject Pageable pageable) {
+  @GetMapping
+  @PreAuthorize("hasAuthority('USER')")
+  @Operation(
+      summary = "Gets tags",
+      description = "Gets paginated animal tags",
+      tags = {"animals", "tags"})
+  public ResponseEntity<Page<AnimalTag>> getAllTags(@ParameterObject Pageable pageable) {
         return ResponseEntity.ok(service.getAllTags(pageable));
     }
 
-    @PostMapping
-    @PreAuthorize("hasAnyAuthority('Moderator', 'Admin')")
-    @Operation(summary = "Creates animal tag")
-    public ResponseEntity<AnimalTag> saveTag(
-            @RequestBody @Valid AnimalTag animalTag) throws
-            InsufficentUserRoleException {
-        log.info("Saving new tag: {}", animalTag.toString());
-        AnimalTag newAnimalTag = service.saveTag(animalTag);
+  @PostMapping
+  @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
+  @Operation(summary = "Creates animal tag")
+  public ResponseEntity<AnimalTag> saveTag(@RequestBody @Valid AnimalTag animalTag)
+      throws InsufficentUserRoleException, AnimalTagServiceException {
+    log.info("Saving new tag: {}", animalTag.toString());
+    AnimalTag newAnimalTag = service.saveTag(animalTag);
 
-        return ResponseEntity.ok(newAnimalTag);
-    }
+    return ResponseEntity.ok(newAnimalTag);
+  }
 
-    @DeleteMapping("/{value}")
-    @PreAuthorize("hasAnyAuthority('Moderator', 'Admin')")
-    @Operation(summary = "Deletes tag")
-    public ResponseEntity<SimpleResponse> deleteTag(
-            @PathVariable String value) throws
-            InsufficentUserRoleException {
+  @DeleteMapping("/{value}")
+  @PreAuthorize("hasAnyAuthority('MOODERATOR', 'ADMIN')")
+  @Operation(summary = "Deletes tag")
+  public ResponseEntity<SimpleResponse> deleteTag(@PathVariable String value)
+      throws InsufficentUserRoleException {
         log.info("Deleting tag with value: {}", value);
 
         SimpleResponse response = service.deleteTag(value);

@@ -3,6 +3,7 @@ spring:
     mongodb:
       username: test
       password: pass
+      auto-index-creation: true
   main:
     allow-bean-definition-overriding: false
 name: test

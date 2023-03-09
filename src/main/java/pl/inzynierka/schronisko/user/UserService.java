@@ -1,6 +1,10 @@
 package pl.inzynierka.schronisko.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
@@ -13,11 +17,6 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.inzynierka.schronisko.configurations.appsettings.UserServiceSettings;
-
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,7 +48,7 @@ public class UserService {
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+    return userRepository.findFirstByUsername(username);
     }
 
     public User updateUser(String username, User user, User userDetails) throws

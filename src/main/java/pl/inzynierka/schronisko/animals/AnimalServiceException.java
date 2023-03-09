@@ -1,6 +1,7 @@
 package pl.inzynierka.schronisko.animals;
 
-public class AnimalServiceException extends Throwable {
-    public AnimalServiceException(String s) {
-    }
+import pl.inzynierka.schronisko.common.SchroniskoException;
+
+public class AnimalServiceException extends SchroniskoException {
+  public AnimalServiceException(String s) {}
 }

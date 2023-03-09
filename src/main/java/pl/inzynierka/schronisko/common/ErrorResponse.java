@@ -1,4 +1,4 @@
-package pl.inzynierka.schronisko;
+package pl.inzynierka.schronisko.common;
 
 import java.time.LocalDateTime;
 
