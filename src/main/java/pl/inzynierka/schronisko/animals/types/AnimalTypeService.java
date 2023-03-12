@@ -1,5 +1,6 @@
 package pl.inzynierka.schronisko.animals.types;
 
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -36,14 +37,18 @@ public class AnimalTypeService {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
         if (authenticatedUser.hasNoRoles(Role.ADMIN, Role.MODERATOR)) {
-            throw new InsufficentUserRoleException(
-                    "To delete animal types you need at least moderator role!");
-        }
-
-        //todo add checking if any animals exist with given animal type
-
-        final var result = animalTypesRepository.deleteByValue(value);
-
-        return new SimpleResponse(result, null);
+      throw new InsufficentUserRoleException(
+          "To delete animal types you need at least moderator role!");
     }
+
+    // todo add checking if any animals exist with given animal type
+
+    final var result = animalTypesRepository.deleteByValue(value);
+
+    return new SimpleResponse(result, null);
+  }
+
+  public Optional<AnimalType> findByValue(String value) {
+    return animalTypesRepository.findFirstByValue(value);
+  }
 }

@@ -39,7 +39,7 @@ public class AnimalTagController {
       throws InsufficentUserRoleException, AnimalTagServiceException {
     log.info("Saving new tag: {}", animalTag.toString());
     AnimalTag newAnimalTag = service.saveTag(animalTag);
-
+    log.info("Saving new tag {} success!", newAnimalTag);
     return ResponseEntity.ok(newAnimalTag);
   }
 

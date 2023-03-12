@@ -1,6 +1,7 @@
 package pl.inzynierka.schronisko.animals.tags;
 
 import com.mongodb.DuplicateKeyException;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -44,15 +45,17 @@ public class AnimalTagService {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
         if (authenticatedUser.hasNoRoles(Role.ADMIN, Role.MODERATOR)) {
-            throw new InsufficentUserRoleException(
-                    "To delete tags you need at least moderator role!");
-        }
-
-        final var result = animalTagsRepository.deleteByValue(value);
-
-
-        //todo remove tags from existing animals
-
-        return new SimpleResponse(result, null);
+      throw new InsufficentUserRoleException("To delete tags you need at least moderator role!");
     }
+
+    final var result = animalTagsRepository.deleteByValue(value);
+
+    // todo remove tags from existing animals
+
+    return new SimpleResponse(result, null);
+  }
+
+  public Optional<AnimalTag> findByValue(String value) {
+    return animalTagsRepository.findFirstByValue(value);
+  }
 }

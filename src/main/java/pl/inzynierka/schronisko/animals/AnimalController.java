@@ -1,0 +1,52 @@
+package pl.inzynierka.schronisko.animals;
+
+import io.swagger.v3.oas.annotations.Operation;
+import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
+import pl.inzynierka.schronisko.common.ErrorResponse;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/animals")
+public class AnimalController {
+  private final AnimalService animalService;
+
+  @GetMapping
+  @PreAuthorize("hasAuthority('USER')")
+  @Operation(summary = "get animals", description = "Gets paginated list of animals")
+  ResponseEntity<Page<Animal>> getAnimals(@ParameterObject Pageable pageable) {
+    return ResponseEntity.ok(animalService.getAnimals(pageable));
+  }
+
+  @PostMapping
+  @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
+  @Operation(summary = "create animal", description = "creates animal")
+  ResponseEntity<Animal> createAnimal(@RequestBody @Validated Animal animal)
+      throws InsufficentUserRoleException {
+    Animal newAnimal = animalService.createAnimal(animal);
+
+    return ResponseEntity.ok(newAnimal);
+  }
+
+  @PutMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
+  @Operation(summary = "update animal", description = "updates animal")
+  ResponseEntity<Animal> updateAnimal(
+      @RequestBody @Validated Animal animal, @PathVariable String id)
+      throws InsufficentUserRoleException, AnimalServiceException {
+    return ResponseEntity.ok(animalService.updateAnimal(id, animal));
+  }
+
+  @ExceptionHandler({AnimalServiceException.class})
+  ResponseEntity<ErrorResponse> animalServiceException(
+      AnimalServiceException e, WebRequest request) {
+    return ResponseEntity.badRequest().body(ErrorResponse.now(e.getMessage()));
+  }
+}
