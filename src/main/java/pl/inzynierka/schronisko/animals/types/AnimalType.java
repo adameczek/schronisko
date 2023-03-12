@@ -5,12 +5,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class AnimalType {
 
@@ -22,4 +24,8 @@ public class AnimalType {
     @Indexed(unique = true)
     @Schema(description = "Type of animal", example = "pies")
     private String value;
+
+    public AnimalType(String value) {
+        this.value = value;
+    }
 }

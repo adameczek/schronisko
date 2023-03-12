@@ -29,4 +29,8 @@ public class AnimalTag {
     @Indexed(unique = true)
     @Schema(description = "unique tag value", example = "rudy")
     private String value;
+
+    public AnimalTag(String value) {
+        this.value = value;
+    }
 }

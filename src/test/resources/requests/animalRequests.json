@@ -1,0 +1,29 @@
+{
+  "default": {
+    "name": "Mruczuś",
+    "description": "slodki kiciulek słodziulinek",
+    "type": "kot",
+    "tags": [
+      "ruchliwy",
+      "rudy"
+    ]
+  },
+  "withTooLongName": {
+    "name": "Mruczuś z bardzo długa przedługa nazwa zdecydowanie zbyt spora nazwa jest to doprawdy potężna liczba znaków w tym requeście, żadne zwierze nie będzie miało tak długiego imienia",
+    "description": "slodki kiciulek słodziulinek",
+    "type": "kot",
+    "tags": [
+      "ruchliwy",
+      "rudy"
+    ]
+  },
+  "withNotExistingTag": {
+    "name": "Bączuś",
+    "description": "slodki kiciulek słodziulinek",
+    "type": "pies",
+    "tags": [
+      "nie istniejący tag",
+      "rudy"
+    ]
+  }
+}

@@ -1,7 +1,11 @@
 package pl.inzynierka.schronisko;
 
+import pl.inzynierka.schronisko.user.Role;
+import pl.inzynierka.schronisko.user.User;
+import pl.inzynierka.schronisko.user.UserService;
+import pl.inzynierka.schronisko.user.UserServiceException;
+
 import java.util.List;
-import pl.inzynierka.schronisko.user.*;
 
 public class SetUp {
   public static final String PASSWORD = "Dupk@1234";
@@ -16,9 +20,9 @@ public class SetUp {
 
     public static List<User> getBasicUserList() {
       return List.of(
-          createModerator("moderator", "moderator@email.com"),
-          createAdmin("admin", "admin@email.com"),
-          createUser("userek", "user@email.com"));
+              createAdmin("admin", "admin@email.com"),
+              createModerator("moderator", "moderator@email.com"),
+              createUser("userek", "user@email.com"));
     }
 
     public static User createModerator(String username, String email) {
@@ -27,7 +31,6 @@ public class SetUp {
           .password(PASSWORD)
           .username(username)
           .email(email)
-          .id("1")
           .firstname("Robert")
           .lastname("Kubica")
           .active(true)
