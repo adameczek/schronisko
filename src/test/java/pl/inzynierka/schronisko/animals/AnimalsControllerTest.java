@@ -75,7 +75,31 @@ public class AnimalsControllerTest {
                 .jsonPath("$.tags[0].value")
                 .value(s -> {
                     assertTrue(List.of("rudy", "ruchliwy").contains(s));
-                }, String.class);
+                }, String.class)
+                .jsonPath("$.createdBy.username")
+                .isEqualTo("moderator");
+    }
+
+    @Test
+    @Order(2)
+    void createAnimalNonExistingTag() throws IOException {
+        String requestBody = loader.getRequestFromFile("withNotExistingTag",
+                                                       "animalRequests");
+
+        client.post()
+                .uri(uriBuilder -> uriBuilder.path("/animals").build())
+                .headers(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_JSON))
+                .headers(httpHeaders -> httpHeaders.setBearerAuth(moderatorToken))
+                .body(Mono.just(requestBody), String.class)
+                .exchange()
+                .expectStatus()
+                .is4xxClientError()
+                .expectBody()
+                .jsonPath("$.error")
+                .value(s -> assertTrue(s.contains("Nie znaleziono danego tagu")),
+                       String.class);
+
+
     }
 
 

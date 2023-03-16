@@ -1,5 +1,6 @@
 package pl.inzynierka.schronisko.animals;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import java.util.List;
 
 @Builder
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class AnimalSearchQuery {
     @Schema(description = "Tags that searched animals should contain")
     private List<String> tags;

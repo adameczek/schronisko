@@ -5,13 +5,14 @@ import com.fasterxml.jackson.core.TreeNode;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.jackson.JsonComponent;
 import pl.inzynierka.schronisko.animals.tags.AnimalTag;
 import pl.inzynierka.schronisko.animals.tags.AnimalTagService;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @JsonComponent
 @RequiredArgsConstructor
@@ -20,7 +21,8 @@ public class AnimalTagsDeserializer extends JsonDeserializer<List<AnimalTag>> {
 
   @Override
   public List<AnimalTag> deserialize(
-      JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException {
+          JsonParser jsonParser,
+          DeserializationContext deserializationContext) throws IOException {
     TreeNode treeNode = jsonParser.getCodec().readTree(jsonParser);
 
     if (!treeNode.isArray()) throw new IOException("\"tags\" nie jest listą!");
@@ -33,10 +35,11 @@ public class AnimalTagsDeserializer extends JsonDeserializer<List<AnimalTag>> {
       var tag = iterator.next().asText();
 
       AnimalTag foundTag =
-          animalTagService
-              .findByValue(tag)
-              .orElseThrow(
-                  () -> new IOException("Nie znaleziono danego tagu: " + tag + " w bazie!"));
+              animalTagService
+                      .findByValue(tag)
+                      .orElseThrow(
+                              () -> new DeserializingException(
+                                      "Nie znaleziono danego tagu: " + tag + " w bazie!"));
 
       tags.add(foundTag);
     }

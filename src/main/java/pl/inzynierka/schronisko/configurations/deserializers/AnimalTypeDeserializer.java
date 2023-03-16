@@ -26,7 +26,7 @@ public class AnimalTypeDeserializer extends JsonDeserializer<AnimalType> {
 
     return animalTypeService
             .findByValue(value)
-            .orElseThrow(() -> new IOException(
+            .orElseThrow(() -> new AnimalTypeDeserializingException(
                     "Nie znaleziono danego typu zwierzęcia w bazie."));
   }
 }

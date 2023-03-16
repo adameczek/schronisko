@@ -2,9 +2,6 @@ package pl.inzynierka.schronisko.animals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.result.DeleteResult;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -19,6 +16,10 @@ import pl.inzynierka.schronisko.authentication.AuthenticationUtils;
 import pl.inzynierka.schronisko.common.SimpleResponse;
 import pl.inzynierka.schronisko.user.Role;
 import pl.inzynierka.schronisko.user.User;
+
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -112,5 +113,10 @@ public class AnimalService {
         }
 
         return new SimpleResponse(true, null);
+    }
+
+    public Page<Animal> searchForAnimals(AnimalSearchQuery searchQuery,
+                                         Pageable pageable) {
+
     }
 }

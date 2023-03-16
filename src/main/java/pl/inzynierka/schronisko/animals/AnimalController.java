@@ -6,6 +6,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -39,14 +40,27 @@ public class AnimalController {
   @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
   @Operation(summary = "update animal", description = "updates animal")
   ResponseEntity<Animal> updateAnimal(
-      @RequestBody @Validated Animal animal, @PathVariable String id)
-      throws InsufficentUserRoleException, AnimalServiceException {
+          @RequestBody @Validated Animal animal, @PathVariable String id)
+          throws InsufficentUserRoleException, AnimalServiceException {
     return ResponseEntity.ok(animalService.updateAnimal(id, animal));
   }
 
-  @ExceptionHandler({AnimalServiceException.class})
+  @PostMapping
+  @PreAuthorize("hasAnyAuthority('USER')")
+  @Operation(summary = "Search for animals")
+  ResponseEntity<Page<Animal>> findAnimals(@ParameterObject Pageable pageable,
+                                           @RequestBody AnimalSearchQuery searchQuery) {
+    animalService.searchForAnimals(searchQuery, pageable);
+
+    return ResponseEntity.internalServerError().build();
+  }
+
+  @ExceptionHandler(
+          {AnimalServiceException.class,
+           HttpMessageNotReadableException.class}
+  )
   ResponseEntity<ErrorResponse> animalServiceException(
-      AnimalServiceException e, WebRequest request) {
+          Exception e, WebRequest request) {
     return ResponseEntity.badRequest().body(ErrorResponse.now(e.getMessage()));
   }
 }

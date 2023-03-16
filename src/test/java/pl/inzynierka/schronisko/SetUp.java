@@ -6,6 +6,7 @@ import pl.inzynierka.schronisko.user.UserService;
 import pl.inzynierka.schronisko.user.UserServiceException;
 
 import java.util.List;
+import java.util.Optional;
 
 public class SetUp {
   public static final String PASSWORD = "Dupk@1234";
@@ -13,7 +14,12 @@ public class SetUp {
   public static class UserSetup {
     public static void initUsersInDb(UserService userService) throws UserServiceException {
       for (User user : getBasicUserList()) {
-        User createdUser = userService.createUser(user);
+        Optional<User> existingUser =
+                userService.findByUsername(user.getUsername());
+
+        if (existingUser.isPresent()) return;
+
+        var createdUser = userService.createUser(user);
         System.out.println(createdUser);
       }
     }
