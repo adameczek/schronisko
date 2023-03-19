@@ -28,7 +28,7 @@ public class SetUp {
       return List.of(
               createAdmin("admin", "admin@email.com"),
               createModerator("moderator", "moderator@email.com"),
-              createUser("userek", "user@email.com"));
+              createUser("userek", "userek@email.com"));
     }
 
     public static User createModerator(String username, String email) {

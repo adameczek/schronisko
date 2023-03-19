@@ -1,7 +1,7 @@
 package pl.inzynierka.schronisko.animals.types;
 
-import java.util.Optional;
 import lombok.AllArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -10,6 +10,8 @@ import pl.inzynierka.schronisko.authentication.AuthenticationUtils;
 import pl.inzynierka.schronisko.common.SimpleResponse;
 import pl.inzynierka.schronisko.user.Role;
 import pl.inzynierka.schronisko.user.User;
+
+import java.util.Optional;
 
 @Service
 @AllArgsConstructor
@@ -21,7 +23,7 @@ public class AnimalTypeService {
     }
 
     public AnimalType saveAnimalType(AnimalType animalType) throws
-            InsufficentUserRoleException {
+            InsufficentUserRoleException, AnimalTypeServiceException {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
         if (authenticatedUser.hasNoRoles(Role.ADMIN, Role.MODERATOR)) {
@@ -29,7 +31,12 @@ public class AnimalTypeService {
                     "To create animal types you need at least moderator role!");
         }
 
-        return animalTypesRepository.save(animalType);
+        try {
+            return animalTypesRepository.save(animalType);
+        } catch (DataIntegrityViolationException e) {
+            throw new AnimalTypeServiceException(
+                    "Podany typ zwierzęcia już istnieje.");
+        }
     }
 
     public SimpleResponse deleteAnimalType(String value) throws

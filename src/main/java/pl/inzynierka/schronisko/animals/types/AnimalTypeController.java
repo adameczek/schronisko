@@ -11,7 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 import pl.inzynierka.schronisko.animals.InsufficentUserRoleException;
+import pl.inzynierka.schronisko.common.ErrorResponse;
 import pl.inzynierka.schronisko.common.SimpleResponse;
 
 @RestController
@@ -34,8 +36,9 @@ public class AnimalTypeController {
   @PostMapping
   @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
   @Operation(summary = "create animal type")
-  public ResponseEntity<AnimalType> saveAnimalType(@RequestBody @Valid AnimalType animalType)
-      throws InsufficentUserRoleException {
+  public ResponseEntity<AnimalType> saveAnimalType(
+          @RequestBody @Valid AnimalType animalType)
+          throws InsufficentUserRoleException, AnimalTypeServiceException {
     log.info("Saving new animal type: {}", animalType);
     AnimalType createdAnimalType = service.saveAnimalType(animalType);
     log.info("Saving new animal type success! {}", createdAnimalType);
@@ -47,7 +50,7 @@ public class AnimalTypeController {
   @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
   @Operation(summary = "Delete animal type")
   public ResponseEntity<SimpleResponse> deleteType(@PathVariable String value)
-      throws InsufficentUserRoleException {
+          throws InsufficentUserRoleException {
     log.info("deleting tag with value: {}", value);
 
     SimpleResponse response = service.deleteAnimalType(value);
@@ -55,5 +58,11 @@ public class AnimalTypeController {
     if (response.isSuccess()) return ResponseEntity.ok(response);
 
     return ResponseEntity.notFound().build();
+  }
+
+  @ExceptionHandler({AnimalTypeServiceException.class})
+  ResponseEntity<ErrorResponse> animalServiceException(
+          Exception e, WebRequest request) {
+    return ResponseEntity.badRequest().body(ErrorResponse.now(e.getMessage()));
   }
 }

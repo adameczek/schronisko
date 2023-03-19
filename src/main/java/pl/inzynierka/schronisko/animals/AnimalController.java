@@ -29,8 +29,9 @@ public class AnimalController {
   @PostMapping
   @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
   @Operation(summary = "create animal", description = "creates animal")
-  ResponseEntity<Animal> createAnimal(@RequestBody @Validated Animal animal)
-      throws InsufficentUserRoleException {
+  ResponseEntity<Animal> createAnimal(
+          @RequestBody @Validated AnimalRequest animal)
+          throws InsufficentUserRoleException, AnimalServiceException {
     Animal newAnimal = animalService.createAnimal(animal);
 
     return ResponseEntity.ok(newAnimal);
@@ -40,12 +41,12 @@ public class AnimalController {
   @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
   @Operation(summary = "update animal", description = "updates animal")
   ResponseEntity<Animal> updateAnimal(
-          @RequestBody @Validated Animal animal, @PathVariable String id)
+          @RequestBody String request, @PathVariable long id)
           throws InsufficentUserRoleException, AnimalServiceException {
-    return ResponseEntity.ok(animalService.updateAnimal(id, animal));
+    return ResponseEntity.ok(animalService.updateAnimal(id, request));
   }
 
-  @PostMapping
+  @PostMapping("/search")
   @PreAuthorize("hasAnyAuthority('USER')")
   @Operation(summary = "Search for animals")
   ResponseEntity<Page<Animal>> findAnimals(@ParameterObject Pageable pageable,

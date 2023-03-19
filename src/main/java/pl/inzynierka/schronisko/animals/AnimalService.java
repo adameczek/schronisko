@@ -1,24 +1,18 @@
 package pl.inzynierka.schronisko.animals;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.client.result.DeleteResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import pl.inzynierka.schronisko.authentication.AuthenticationUtils;
+import pl.inzynierka.schronisko.common.MappingException;
 import pl.inzynierka.schronisko.common.SimpleResponse;
 import pl.inzynierka.schronisko.user.Role;
 import pl.inzynierka.schronisko.user.User;
 
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
@@ -26,9 +20,7 @@ import java.util.Optional;
 @Slf4j
 public class AnimalService {
     private final AnimalsRepository animalsRepository;
-    private final MongoTemplate mongoTemplate;
-    private final FindAndModifyOptions findAndModifyOptions;
-    private final ObjectMapper objectMapper;
+    private final AnimalMapper animalMapper;
 
     public Page<Animal> getAnimals(Pageable pageable) {
         //todo limit sent data
@@ -36,12 +28,12 @@ public class AnimalService {
         return animalsRepository.findAll(pageable);
     }
 
-    public Optional<Animal> getAnimalById(String id) {
+    public Optional<Animal> getAnimalById(long id) {
         return animalsRepository.findById(id);
     }
 
-    public Animal createAnimal(Animal animal) throws
-            InsufficentUserRoleException {
+    public Animal createAnimal(AnimalRequest animal) throws
+            InsufficentUserRoleException, AnimalServiceException {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
 
@@ -54,46 +46,48 @@ public class AnimalService {
                     "User is not authorized to add animals!");
         }
 
-        animal.setCreatedBy(authenticatedUser);
+        try {
+            var animalToSave = animalMapper.mapToAnimal(animal);
+            animalToSave.setCreatedBy(authenticatedUser);
+            animalToSave.setCreated(LocalDate.now());
 
-        return animalsRepository.save(animal);
+            return animalsRepository.save(animalToSave);
+        } catch (MappingException e) {
+            throw new AnimalServiceException(e.getMessage());
+        }
     }
 
-    public Animal updateAnimal(String id, Animal newAnimalData) throws
+    public Animal updateAnimal(Long id, String newAnimalDataRequest) throws
             InsufficentUserRoleException, AnimalServiceException {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
 
-        if (authenticatedUser.hasNoRoles(Role.ADMIN,
-                                         Role.MODERATOR)) {
+        if (authenticatedUser.hasNoRoles(Role.ADMIN, Role.MODERATOR)) {
             throw new InsufficentUserRoleException(
                     "Cannot update animal if authenticated user is not at least moderator.");
         }
 
-        Query query = new Query();
-        query.addCriteria(Criteria.where("id").is(id));
+        Animal existingAnimalData = animalsRepository.findById(id)
+                .orElseThrow(() -> new AnimalServiceException(
+                        "Nie znaleziono zwierzecia do zaktualizowania z danym id"));
 
-        var update = new Update();
+        try {
+            Animal mappedNewAnimalData = animalMapper.updateAnimal(
+                    newAnimalDataRequest,
+                    existingAnimalData);
 
-        Map<String, Object> animalFieldMap = objectMapper.convertValue(
-                newAnimalData,
-                Map.class);
-        animalFieldMap.forEach(update::set);
-
-        Animal updatedAnimal = mongoTemplate.findAndModify(query,
-                                                           update,
-                                                           findAndModifyOptions,
-                                                           Animal.class);
-
-        if (Objects.isNull(updatedAnimal)) {
+            return animalsRepository.save(mappedNewAnimalData);
+        } catch (BeansException e) {
+            e.printStackTrace();
             throw new AnimalServiceException(
-                    "animal for updating has not been found!");
+                    "Wystąpił błąd podczas aktualizowania zwierzaka!");
+        } catch (MappingException e) {
+            e.printStackTrace();
+            throw new AnimalServiceException(e.getMessage());
         }
-
-        return updatedAnimal;
     }
 
-    public SimpleResponse deleteAnimal(String id) throws
+    public SimpleResponse deleteAnimal(long id) throws
             InsufficentUserRoleException {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
@@ -103,20 +97,13 @@ public class AnimalService {
                     "Cannot delete animal if user is not at least moderator.");
         }
 
-        final var query = new Query();
-        query.addCriteria(Criteria.where("id").is(id));
+        var result = animalsRepository.deleteById(id);
 
-        DeleteResult remove = mongoTemplate.remove(query, Animal.class);
-
-        if (remove.getDeletedCount() == 0) {
-            return new SimpleResponse(false, null);
-        }
-
-        return new SimpleResponse(true, null);
+        return new SimpleResponse(result == 1, null);
     }
 
     public Page<Animal> searchForAnimals(AnimalSearchQuery searchQuery,
                                          Pageable pageable) {
-
+        return null;
     }
 }

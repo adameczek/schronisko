@@ -1,10 +1,11 @@
 package pl.inzynierka.schronisko.animals.types;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+
 import java.util.Optional;
-import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface AnimalTypesRepository extends MongoRepository<AnimalType, String> {
-  Optional<AnimalType> findFirstByValue(String value);
+public interface AnimalTypesRepository extends JpaRepository<AnimalType, Long> {
+    Optional<AnimalType> findFirstByValue(String value);
 
-  boolean deleteByValue(String value);
+    boolean deleteByValue(String value);
 }
