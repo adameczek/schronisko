@@ -1,23 +1,25 @@
 package pl.inzynierka.schronisko.animals;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mongodb.client.result.DeleteResult;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.criteria.CriteriaBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeansException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import pl.inzynierka.schronisko.authentication.AuthenticationUtils;
+import pl.inzynierka.schronisko.common.MappingException;
 import pl.inzynierka.schronisko.common.SimpleResponse;
 import pl.inzynierka.schronisko.user.Role;
 import pl.inzynierka.schronisko.user.User;
 
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -26,8 +28,8 @@ import java.util.Optional;
 @Slf4j
 public class AnimalService {
     private final AnimalsRepository animalsRepository;
-    private final MongoTemplate mongoTemplate;
-    private final FindAndModifyOptions findAndModifyOptions;
+    private final AnimalMapper animalMapper;
+    private final EntityManager entityManager;
     private final ObjectMapper objectMapper;
 
     public Page<Animal> getAnimals(Pageable pageable) {
@@ -36,12 +38,12 @@ public class AnimalService {
         return animalsRepository.findAll(pageable);
     }
 
-    public Optional<Animal> getAnimalById(String id) {
+    public Optional<Animal> getAnimalById(long id) {
         return animalsRepository.findById(id);
     }
 
-    public Animal createAnimal(Animal animal) throws
-            InsufficentUserRoleException {
+    public Animal createAnimal(AnimalRequest animal) throws
+            InsufficentUserRoleException, AnimalServiceException {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
 
@@ -54,46 +56,48 @@ public class AnimalService {
                     "User is not authorized to add animals!");
         }
 
-        animal.setCreatedBy(authenticatedUser);
+        try {
+            var animalToSave = animalMapper.mapToAnimal(animal);
+            animalToSave.setCreatedBy(authenticatedUser);
+            animalToSave.setCreated(LocalDateTime.now());
 
-        return animalsRepository.save(animal);
+            return animalsRepository.save(animalToSave);
+        } catch (MappingException e) {
+            throw new AnimalServiceException(e.getMessage());
+        }
     }
 
-    public Animal updateAnimal(String id, Animal newAnimalData) throws
+    public Animal updateAnimal(Long id, String newAnimalDataRequest) throws
             InsufficentUserRoleException, AnimalServiceException {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
 
-        if (authenticatedUser.hasNoRoles(Role.ADMIN,
-                                         Role.MODERATOR)) {
+        if (authenticatedUser.hasNoRoles(Role.ADMIN, Role.MODERATOR)) {
             throw new InsufficentUserRoleException(
                     "Cannot update animal if authenticated user is not at least moderator.");
         }
 
-        Query query = new Query();
-        query.addCriteria(Criteria.where("id").is(id));
+        Animal existingAnimalData = animalsRepository.findById(id)
+                .orElseThrow(() -> new AnimalServiceException(
+                        "Nie znaleziono zwierzecia do zaktualizowania z danym id"));
 
-        var update = new Update();
+        try {
+            Animal mappedNewAnimalData = animalMapper.updateAnimal(
+                    newAnimalDataRequest,
+                    existingAnimalData);
 
-        Map<String, Object> animalFieldMap = objectMapper.convertValue(
-                newAnimalData,
-                Map.class);
-        animalFieldMap.forEach(update::set);
-
-        Animal updatedAnimal = mongoTemplate.findAndModify(query,
-                                                           update,
-                                                           findAndModifyOptions,
-                                                           Animal.class);
-
-        if (Objects.isNull(updatedAnimal)) {
+            return animalsRepository.save(mappedNewAnimalData);
+        } catch (BeansException e) {
+            e.printStackTrace();
             throw new AnimalServiceException(
-                    "animal for updating has not been found!");
+                    "Wystąpił błąd podczas aktualizowania zwierzaka!");
+        } catch (MappingException e) {
+            e.printStackTrace();
+            throw new AnimalServiceException(e.getMessage());
         }
-
-        return updatedAnimal;
     }
 
-    public SimpleResponse deleteAnimal(String id) throws
+    public SimpleResponse deleteAnimal(long id) throws
             InsufficentUserRoleException {
         final User authenticatedUser =
                 AuthenticationUtils.getAuthenticatedUser();
@@ -103,20 +107,73 @@ public class AnimalService {
                     "Cannot delete animal if user is not at least moderator.");
         }
 
-        final var query = new Query();
-        query.addCriteria(Criteria.where("id").is(id));
+        var result = animalsRepository.deleteById(id);
 
-        DeleteResult remove = mongoTemplate.remove(query, Animal.class);
-
-        if (remove.getDeletedCount() == 0) {
-            return new SimpleResponse(false, null);
-        }
-
-        return new SimpleResponse(true, null);
+        return new SimpleResponse(result == 1, null);
     }
 
     public Page<Animal> searchForAnimals(AnimalSearchQuery searchQuery,
-                                         Pageable pageable) {
+                                         Pageable pageable) throws
+            AnimalServiceException {
+        //todo add validator
+        CriteriaBuilder cb = entityManager.getCriteriaBuilder();
+        Specification<Animal> specification = Specification.where(null);
 
+        if (Objects.nonNull(searchQuery.getName()))
+            specification = specification.and(AnimalSpecifications.hasNameLike(
+                    searchQuery.getName()));
+
+        if (Objects.nonNull(searchQuery.getCreatedBy()))
+            specification = specification.and(AnimalSpecifications.createdBy(
+                    searchQuery.getCreatedBy()));
+
+        if (Objects.nonNull(searchQuery.getTypes()))
+            specification = specification.and(AnimalSpecifications.hasTypeIn(
+                    searchQuery.getTypes()));
+
+        if (Objects.nonNull(searchQuery.getTags()))
+            specification = specification.and(AnimalSpecifications.hasTags(
+                    searchQuery.getTags()));
+
+        PageRequest pageRequest;
+
+        if (searchQuery.getSortBy() != null) {
+            pageRequest = PageRequest.of(pageable.getPageNumber(),
+                                         pageable.getPageSize(),
+                                         getSortByFromString(
+                                                 searchQuery.getSortBy()));
+        } else {
+            pageRequest = PageRequest.of(pageable.getPageNumber(),
+                                         pageable.getPageSize());
+        }
+
+        //todo add pagination and others
+        return animalsRepository.findAll(specification, pageRequest);
+    }
+
+    Sort getSortByFromString(String sortBy) throws AnimalServiceException {
+        if (sortBy.length() < 2) throw new AnimalServiceException(
+                "Niepoprawna wartość w sortBy!");
+
+        Sort.Direction direction;
+        if (sortBy.charAt(0) == '+') {
+            direction = Sort.Direction.ASC;
+        } else if (sortBy.charAt(0) == '-') {
+            direction = Sort.Direction.DESC;
+        } else {
+            throw new AnimalServiceException(
+                    "Niepoprawny pierwszy znak w polu sortBy!");
+        }
+
+        String field = sortBy.substring(1);
+
+        var allowedFields = List.of("type", "name", "createdBy", "created");
+
+        if (allowedFields.contains(field)) {
+            return Sort.by(direction, field);
+        } else {
+            throw new AnimalServiceException(
+                    "Niepoprawna nazwa pola do sortowania!");
+        }
     }
 }

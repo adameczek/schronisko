@@ -2,48 +2,47 @@ package pl.inzynierka.schronisko.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import pl.inzynierka.schronisko.user.validators.ValidPassword;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @AllArgsConstructor
-@Data
-@Document
 @Builder
+@Entity(name = "users")
 @NoArgsConstructor
+@Getter
+@Setter
+@ToString
 public class User {
-
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Schema(description = "Unique identifier of the contact.", example = "1")
-    private String id;
-    @NotBlank(message = "Username can't be empty")
-    @Indexed(unique = true)
+    private long id;
+    @Column(unique = true, nullable = true)
     @Size(min = 1, max = 50)
     @Schema(description = "Username of user.", example = "Pawulonik21")
     private String username;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank
+    @Column(nullable = false)
     @ValidPassword
     @Schema(description = "password of user", example = "P@$$w0rd")
     private String password;
-    @Indexed(unique = true)
     @NotBlank
     @Size(min = 1, max = 100)
     @Email(message = "Email is not valid")
     @Schema(description = "Email of user", example = "robert@kubica.pl")
+    @Column(unique = true, nullable = false)
     private String email;
     @Size(min = 1, max = 100)
     @Schema(description = "user firstname", example = "Mieczyslaw")
@@ -51,9 +50,12 @@ public class User {
     @Size(min = 1, max = 100)
     @Schema(description = "user lastname", example = "Chrabonszczak")
     private String lastname;
-    @Indexed
+    @CreatedDate
+    @Column(updatable = false, nullable = false)
     @Schema(description = "Date of account creation")
-    private LocalDate joined;
+    private LocalDateTime joined;
+    @LastModifiedDate
+    private LocalDateTime updated;
     @Builder.Default
     @Schema(description = "Roles of user")
     private List<Role> roles = new ArrayList<>(List.of(Role.USER));

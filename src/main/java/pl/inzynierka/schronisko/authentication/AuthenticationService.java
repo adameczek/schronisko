@@ -27,7 +27,7 @@ public class AuthenticationService {
     public AuthResponse login(final AuthRequest request) {
         final Authentication authenticate =
                 this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getEmail(),
                         request.getPassword()));
 
         final String token = this.jwtTokenProvider.createToken(authenticate);

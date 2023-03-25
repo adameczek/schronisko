@@ -2,6 +2,7 @@ package pl.inzynierka.schronisko.animals;
 
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,47 +13,64 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import pl.inzynierka.schronisko.common.ErrorResponse;
+import pl.inzynierka.schronisko.common.SimpleResponse;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/animals")
 public class AnimalController {
   private final AnimalService animalService;
+  private final ModelMapper modelMapper;
 
   @GetMapping
   @PreAuthorize("hasAuthority('USER')")
-  @Operation(summary = "get animals", description = "Gets paginated list of animals")
-  ResponseEntity<Page<Animal>> getAnimals(@ParameterObject Pageable pageable) {
-    return ResponseEntity.ok(animalService.getAnimals(pageable));
+  @Operation(
+          summary = "get animals",
+          description = "Gets paginated list of animals"
+  )
+  ResponseEntity<Page<AnimalResponse>> getAnimals(
+          @ParameterObject Pageable pageable) {
+    return ResponseEntity.ok(animalService.getAnimals(pageable)
+                                     .map(this::convertToResponse));
+  }
+
+  private AnimalResponse convertToResponse(Animal animal) {
+    return modelMapper.map(animal, AnimalResponse.class);
   }
 
   @PostMapping
   @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
   @Operation(summary = "create animal", description = "creates animal")
-  ResponseEntity<Animal> createAnimal(@RequestBody @Validated Animal animal)
-      throws InsufficentUserRoleException {
+  ResponseEntity<AnimalResponse> createAnimal(
+          @RequestBody @Validated AnimalRequest animal)
+          throws InsufficentUserRoleException, AnimalServiceException {
     Animal newAnimal = animalService.createAnimal(animal);
 
-    return ResponseEntity.ok(newAnimal);
+    return ResponseEntity.ok(convertToResponse(newAnimal));
   }
 
   @PutMapping("/{id}")
   @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
   @Operation(summary = "update animal", description = "updates animal")
-  ResponseEntity<Animal> updateAnimal(
-          @RequestBody @Validated Animal animal, @PathVariable String id)
+  ResponseEntity<AnimalResponse> updateAnimal(
+          @RequestBody String request, @PathVariable long id)
           throws InsufficentUserRoleException, AnimalServiceException {
-    return ResponseEntity.ok(animalService.updateAnimal(id, animal));
+    return ResponseEntity.ok(convertToResponse(animalService.updateAnimal(id,
+                                                                          request)));
   }
 
-  @PostMapping
+  @PostMapping("/search")
   @PreAuthorize("hasAnyAuthority('USER')")
   @Operation(summary = "Search for animals")
-  ResponseEntity<Page<Animal>> findAnimals(@ParameterObject Pageable pageable,
-                                           @RequestBody AnimalSearchQuery searchQuery) {
-    animalService.searchForAnimals(searchQuery, pageable);
+  ResponseEntity<Page<AnimalResponse>> findAnimals(
+          @ParameterObject Pageable pageable,
+          @RequestBody AnimalSearchQuery searchQuery) throws
+          AnimalServiceException {
+    Page<AnimalResponse> animals = animalService.searchForAnimals(searchQuery,
+                                                                  pageable)
+            .map(this::convertToResponse);
 
-    return ResponseEntity.internalServerError().build();
+    return ResponseEntity.ok(animals);
   }
 
   @ExceptionHandler(
@@ -62,5 +80,12 @@ public class AnimalController {
   ResponseEntity<ErrorResponse> animalServiceException(
           Exception e, WebRequest request) {
     return ResponseEntity.badRequest().body(ErrorResponse.now(e.getMessage()));
+  }
+
+  @DeleteMapping("/{id}")
+  @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
+  ResponseEntity<SimpleResponse> deleteAnimal(@PathVariable long id) throws
+          InsufficentUserRoleException {
+    return ResponseEntity.ok(animalService.deleteAnimal(id));
   }
 }

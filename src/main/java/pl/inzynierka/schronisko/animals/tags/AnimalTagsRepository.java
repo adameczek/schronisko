@@ -1,9 +1,10 @@
 package pl.inzynierka.schronisko.animals.tags;
 
-import java.util.Optional;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AnimalTagsRepository extends MongoRepository<AnimalTag, String> {
+import java.util.Optional;
+
+public interface AnimalTagsRepository extends JpaRepository<AnimalTag, Long> {
   Optional<AnimalTag> findFirstByValue(String value);
 
   boolean deleteByValue(String value);

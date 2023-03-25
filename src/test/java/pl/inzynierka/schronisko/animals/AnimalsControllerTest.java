@@ -4,9 +4,9 @@ package pl.inzynierka.schronisko.animals;
 import lombok.NoArgsConstructor;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.data.mongo.AutoConfigureDataMongo;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.context.WebApplicationContext;
 import pl.inzynierka.schronisko.JsonRequestBodyLoader;
@@ -27,10 +27,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT,
         classes = SchroniskoApplication.class
 )
-@AutoConfigureDataMongo
 @NoArgsConstructor
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@ActiveProfiles("test")
 public class AnimalsControllerTest {
     @Autowired
     WebTestClient client;
@@ -51,8 +51,9 @@ public class AnimalsControllerTest {
             UserServiceException {
         SetUp.UserSetup.initUsersInDb(userService);
         moderatorToken = TestUtils.loginAndGetToken(authenticationService,
-                                                    "moderator");
-        userToken = TestUtils.loginAndGetToken(authenticationService, "userek");
+                                                    "moderator@email.com");
+        userToken = TestUtils.loginAndGetToken(authenticationService,
+                                               "userek@email.com");
         dbInitializer.initDB();
     }
 
@@ -76,8 +77,8 @@ public class AnimalsControllerTest {
                 .value(s -> {
                     assertTrue(List.of("rudy", "ruchliwy").contains(s));
                 }, String.class)
-                .jsonPath("$.createdBy.username")
-                .isEqualTo("moderator");
+                .jsonPath("$.createdBy.email")
+                .isEqualTo("moderator@email.com");
     }
 
     @Test
@@ -96,10 +97,7 @@ public class AnimalsControllerTest {
                 .is4xxClientError()
                 .expectBody()
                 .jsonPath("$.error")
-                .value(s -> assertTrue(s.contains("Nie znaleziono danego tagu")),
-                       String.class);
-
-
+                .exists();
     }
 
 

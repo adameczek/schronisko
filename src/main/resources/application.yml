@@ -3,13 +3,18 @@ security:
     name: root
     password: root
 spring:
-  data:
-    mongodb:
-      auto-index-creation: 'true'
-      authentication-database: admin
-      database: schronisko
-      port: '27018'
-      host: localhost
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://0.0.0.0:5433/testowa
+    username: testuser
+    password: testpassword
   devtools:
     restart:
       quiet-period: 1s

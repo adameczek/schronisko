@@ -1,0 +1,16 @@
+spring:
+  main:
+    allow-bean-definition-overriding: false
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testDB;DB_CLOSE_DELAY=-1;NON_KEYWORDS=KEY,VALUE
+    username: test
+    password: test
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        hbm2ddl:
+          auto: create
+        show_sql: true
+name: test

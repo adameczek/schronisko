@@ -14,10 +14,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
 
   @Override
-  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-    return userRepository
-        .findFirstByUsername(username)
-        .map(UserPrincipal::new)
-        .orElseThrow(() -> new UsernameNotFoundException(username));
+  public UserDetails loadUserByUsername(String email) throws
+          UsernameNotFoundException {
+      return userRepository
+              .findFirstByEmail(email)
+              .map(UserPrincipal::new)
+              .orElseThrow(() -> new UsernameNotFoundException(email));
   }
 }

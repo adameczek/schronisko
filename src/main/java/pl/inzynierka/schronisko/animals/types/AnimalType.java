@@ -1,27 +1,30 @@
 package pl.inzynierka.schronisko.animals.types;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
+import lombok.Setter;
 
-@Document
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Entity
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Getter
+@Setter
 public class AnimalType {
 
     @Id
-    @Schema(description = "id of tag")
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Schema(description = "id of animal type")
+    private Long id;
     @NotNull
     @Size(min = 1, max = 100)
-    @Indexed(unique = true)
+    @Column(nullable = false, unique = true)
     @Schema(description = "Type of animal", example = "pies")
     private String value;
 
