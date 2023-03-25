@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -20,7 +20,7 @@ public class UserService {
 
     public User createUser(User user) throws UserServiceException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setJoined(LocalDate.now());
+        user.setJoined(LocalDateTime.now());
         user.setPassword(encodedPassword);
 
         try {
@@ -67,7 +67,7 @@ public class UserService {
                             MatchingStrategies.STRICT);
 
             mapper.map(newUserData, updatedUserData);
-            updatedUserData.setUpdated(LocalDate.now());
+            updatedUserData.setUpdated(LocalDateTime.now());
 
         } catch (Exception e) {
             e.printStackTrace();

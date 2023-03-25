@@ -12,7 +12,7 @@ spring:
         format_sql: true
     show-sql: true
   datasource:
-    url: jdbc:postgresql://0.0.0.0:5432/testowa
+    url: jdbc:postgresql://0.0.0.0:5433/testowa
     username: testuser
     password: testpassword
   devtools:

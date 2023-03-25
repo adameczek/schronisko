@@ -12,7 +12,7 @@ import pl.inzynierka.schronisko.animals.types.AnimalType;
 import pl.inzynierka.schronisko.configurations.validationscopes.RepositorySave;
 import pl.inzynierka.schronisko.user.User;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @AllArgsConstructor
@@ -24,11 +24,9 @@ import java.util.List;
 public class Animal {
     @ManyToMany
     @Schema(description = "List of animal tags to help with searching")
-    @JoinColumn(name = "value")
-    List<AnimalTag> tags;
+    private List<AnimalTag> tags;
 
     @ManyToOne
-    @JoinColumn(name = "email")
     @NotNull(groups = RepositorySave.class) User createdBy;
 
     @Id
@@ -37,7 +35,6 @@ public class Animal {
 
     @NotNull(groups = RepositorySave.class)
     @ManyToOne
-    @JoinColumn(name = "value")
     private AnimalType type;
 
     @NotNull
@@ -56,7 +53,7 @@ public class Animal {
     @CreatedDate
     @Column(updatable = false, nullable = false)
     @Schema(description = "Date of animal creation")
-    private LocalDate created;
+    private LocalDateTime created;
     @LastModifiedDate
-    private LocalDate updated;
+    private LocalDateTime updated;
 }

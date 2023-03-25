@@ -11,7 +11,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import pl.inzynierka.schronisko.user.validators.ValidPassword;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,9 +53,9 @@ public class User {
     @CreatedDate
     @Column(updatable = false, nullable = false)
     @Schema(description = "Date of account creation")
-    private LocalDate joined;
+    private LocalDateTime joined;
     @LastModifiedDate
-    private LocalDate updated;
+    private LocalDateTime updated;
     @Builder.Default
     @Schema(description = "Roles of user")
     private List<Role> roles = new ArrayList<>(List.of(Role.USER));
