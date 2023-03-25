@@ -1,21 +1,29 @@
 security:
   user:
-    name: myuser
-    password: mypassword
+    name: root
+    password: root
 spring:
-  data:
-    mongodb:
-      auto-index-creation: 'true'
-      authentication-database: admin
-      database: schronisko
-      port: '27017'
-      host: localhost
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    show-sql: true
+  datasource:
+    url: jdbc:postgresql://0.0.0.0:5433/testowa
+    username: testuser
+    password: testpassword
   devtools:
     restart:
       quiet-period: 1s
       poll-interval: 2s
   main:
     web-application-type: SERVLET
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
 settings:
   user-service:
     editable-fields:

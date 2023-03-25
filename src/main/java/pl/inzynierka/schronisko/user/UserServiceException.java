@@ -1,16 +1,17 @@
 package pl.inzynierka.schronisko.user;
 
-public class UserServiceException extends Exception {
-    public UserServiceException() {
-    }
+import pl.inzynierka.schronisko.common.SchroniskoException;
 
-    public UserServiceException(String message) {
-        super(message);
-    }
+public class UserServiceException extends SchroniskoException {
+  public UserServiceException() {}
 
-    public UserServiceException(String message, Throwable cause) {
-        super(message, cause);
-    }
+  public UserServiceException(String message) {
+    super(message);
+  }
+
+  public UserServiceException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
     public UserServiceException(Throwable cause) {
         super(cause);

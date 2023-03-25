@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
+import pl.inzynierka.schronisko.configurations.security.UserPrincipal;
 import pl.inzynierka.schronisko.user.Role;
 import pl.inzynierka.schronisko.user.User;
 
@@ -50,7 +51,9 @@ public class JwtTokenProvider {
                                .map(GrantedAuthority::getAuthority)
                                .collect(joining(",")));
         }
-
+        UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
+        claims.setId(String.valueOf(user.getUser().getId()));
+        claims.put("username", user.getUser().getUsername());
         Date now = new Date();
         Date validity =
                 new Date(now.getTime() + this.jwtProperties.getValidityInMs());
@@ -78,13 +81,16 @@ public class JwtTokenProvider {
                 AuthorityUtils.commaSeparatedStringToAuthorityList(
                         authoritiesClaim.toString());
 
-        User user = User.builder().username(claims.getSubject())
-                .password("")
-                .roles(authorities.stream()
-                               .map(grantedAuthority -> Role.valueOf(
-                                       grantedAuthority.getAuthority()))
-                               .toList())
-                .build();
+        User user =
+                User.builder().username(String.valueOf(claims.get("username")))
+                        .email(claims.getSubject())
+                        .id(Long.parseLong(claims.getId()))
+                        .password("")
+                        .roles(authorities.stream()
+                                       .map(grantedAuthority -> Role.valueOf(
+                                               grantedAuthority.getAuthority()))
+                                       .toList())
+                        .build();
         return new UsernamePasswordAuthenticationToken(user,
                                                        token,
                                                        authorities);

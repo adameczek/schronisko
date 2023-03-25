@@ -15,17 +15,23 @@ public class AuthenticationService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
-    public ResponseEntity<AuthResponse> login(final AuthRequest request) {
+    public ResponseEntity<AuthResponse> loginRequest(final AuthRequest request) {
+        AuthResponse login = login(request);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.AUTHORIZATION,
+                        "Bearer " + login.getToken())
+                .body(login);
+    }
+
+    public AuthResponse login(final AuthRequest request) {
         final Authentication authenticate =
                 this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
+                        request.getEmail(),
                         request.getPassword()));
 
         final String token = this.jwtTokenProvider.createToken(authenticate);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION,
-                        "Bearer " + token)
-                .body(new AuthResponse(token));
+        return new AuthResponse(token);
     }
 }

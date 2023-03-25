@@ -1,22 +1,15 @@
 package pl.inzynierka.schronisko.user;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.mongodb.core.FindAndModifyOptions;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import pl.inzynierka.schronisko.configurations.appsettings.UserServiceSettings;
 
-import java.time.LocalDate;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -24,13 +17,10 @@ import java.util.Optional;
 public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserServiceSettings settings;
-    private final MongoTemplate mongoTemplate;
-    private final FindAndModifyOptions findAndModifyOptions;
 
     public User createUser(User user) throws UserServiceException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setJoined(LocalDate.now());
+        user.setJoined(LocalDateTime.now());
         user.setPassword(encodedPassword);
 
         try {
@@ -49,38 +39,42 @@ public class UserService {
     }
 
     public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
+        return userRepository.findFirstByUsername(username);
     }
 
-    public User updateUser(String username, User user, User userDetails) throws
-            UserServiceException {
-        if (!username.equals(userDetails.getUsername()) && !userDetails.getRoles()
-                .contains(Role.ADMIN))
+    public User updateUser(String email,
+                           UserUpdateRequest newUserData,
+                           User loggedUserDetails) throws UserServiceException {
+        if (!email.equals(loggedUserDetails.getEmail()) && !loggedUserDetails.getRoles()
+                .contains(Role.ADMIN)) throw new UserServiceException(
+                "Insufficient permissions to edit this user!");
+
+        Optional<User> optionalUser = userRepository.findFirstByEmail(email);
+
+        if (optionalUser.isEmpty()) throw new UserServiceException(
+                "Użytkownik z podanym mailem nie istnieje!");
+
+        if (newUserData.getPassword() != null)
+            newUserData.setPassword(passwordEncoder.encode(newUserData.getPassword()));
+
+        User updatedUserData = optionalUser.get();
+
+        try {
+            ModelMapper mapper = new ModelMapper();
+            mapper.getConfiguration()
+                    .setSkipNullEnabled(true)
+                    .setMatchingStrategy(
+                            MatchingStrategies.STRICT);
+
+            mapper.map(newUserData, updatedUserData);
+            updatedUserData.setUpdated(LocalDateTime.now());
+
+        } catch (Exception e) {
+            e.printStackTrace();
             throw new UserServiceException(
-                    "Insufficient permissions to edit this user!");
+                    "Wystąpił błąd przy aktualizowaniu danych użytkownika");
+        }
 
-        ObjectMapper ob = new ObjectMapper();
-        Query query = new Query();
-        query.addCriteria(Criteria.where("username").is(username));
-        Update update = new Update();
-
-        Map<String, Object> userFieldsMap = ob.convertValue(user, Map.class);
-        userFieldsMap.entrySet().stream()
-                .filter(keyValue -> settings.getEditableFields()
-                        .contains(keyValue.getKey()))
-                .filter(keyValue -> Objects.nonNull(keyValue.getValue()))
-                .forEach(keyValue -> update.set(keyValue.getKey(),
-                                                keyValue.getValue()));
-
-        User modifiedUser = mongoTemplate.findAndModify(query,
-                                                        update,
-                                                        findAndModifyOptions,
-                                                        User.class);
-
-        if (null == modifiedUser)
-            throw new UserServiceException(
-                    "User for modifying has not been found!");
-
-        return modifiedUser;
+        return userRepository.save(updatedUserData);
     }
 }

@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import org.modelmapper.ModelMapper;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -13,15 +14,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
-import pl.inzynierka.schronisko.ErrorResponse;
+import pl.inzynierka.schronisko.common.ErrorResponse;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -30,6 +27,7 @@ import java.util.Optional;
 @Tag(name = "Users", description = "provides user data")
 public class UserController {
     private final UserService userService;
+    private final ModelMapper modelMapper;
 
     @GetMapping
     @PreAuthorize("hasAuthority('USER')")
@@ -38,14 +36,20 @@ public class UserController {
             description = "lists paginated users list",
             tags = {"users"}
     )
-    ResponseEntity<Page<User>> getUsers(@ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(this.userService.getUsers(pageable));
+    ResponseEntity<Page<UserResponse>> getUsers(
+            @ParameterObject Pageable pageable) {
+        return ResponseEntity.ok(this.userService.getUsers(pageable)
+                                         .map(this::convertToResponse));
+    }
+
+    private UserResponse convertToResponse(User user) {
+        return modelMapper.map(user, UserResponse.class);
     }
 
     @GetMapping("/me")
     @PreAuthorize("hasAuthority('USER')")
     @Operation(summary = "Gets authenticated user", tags = {"user"})
-    ResponseEntity<User> getLoggedUser() {
+    ResponseEntity<UserResponse> getLoggedUser() {
         Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
         final User userDetails = (User) authentication.getPrincipal();
@@ -55,10 +59,10 @@ public class UserController {
     @GetMapping("/{username}")
     @PreAuthorize("hasAuthority('USER')")
     @Operation(summary = "Get user by username")
-    ResponseEntity<User> getUser(@PathVariable final String username) {
+    ResponseEntity<UserResponse> getUser(@PathVariable final String username) {
         final Optional<User> user = userService.findByUsername(username);
 
-        return user.map(ResponseEntity::ok)
+        return user.map(this::convertToResponse).map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -68,38 +72,20 @@ public class UserController {
             summary = "Updates user",
             description = "Updates user provided in path variable. Users without admin role cannot update other users."
     )
-    ResponseEntity<User> updateUser(@PathVariable final String username,
-                                    @RequestBody final User user) throws
+    ResponseEntity<UserResponse> updateUser(@PathVariable final String username,
+                                            @RequestBody
+                                            final UserUpdateRequest user) throws
             UserServiceException {
         final Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
         final User userDetails = (User) authentication.getPrincipal();
 
-        return ResponseEntity.ok(this.userService.updateUser(username,
-                                                             user,
-                                                             userDetails));
+        return ResponseEntity.ok(convertToResponse(this.userService.updateUser(
+                username,
+                user,
+                userDetails)));
     }
 
-
-    @SneakyThrows
-    @PostMapping
-    @Operation(summary = "Creates user")
-    ResponseEntity<User> createUser(@Valid @RequestBody final User user) {
-        return ResponseEntity.ok(this.userService.createUser(user));
-    }
-
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    ResponseEntity<Map<String, String>> onNonValidRequest(
-            final MethodArgumentNotValidException e,
-            final WebRequest request) {
-        Map<String, String> errors = new HashMap<>();
-        e.getBindingResult().getAllErrors().forEach((error) -> {
-            final String fieldName = ((FieldError) error).getField();
-            final String errorMessage = error.getDefaultMessage();
-            errors.put(fieldName, errorMessage);
-        });
-        return ResponseEntity.badRequest().body(errors);
-    }
 
     @ExceptionHandler(UserServiceException.class)
     ResponseEntity<ErrorResponse> userServiceError(final UserServiceException e,
@@ -108,10 +94,12 @@ public class UserController {
                 .body(new ErrorResponse(LocalDateTime.now(), e.getMessage()));
     }
 
-    @ExceptionHandler(Exception.class)
-    ResponseEntity<ErrorResponse> handleAnyException(final Exception e,
-                                                     final WebRequest request) {
-        return ResponseEntity.badRequest()
-                .body(ErrorResponse.now(e.getMessage()));
+    @SneakyThrows
+    @PostMapping
+    @Operation(summary = "Creates user")
+    ResponseEntity<UserResponse> createUser(
+            @Valid @RequestBody final User user) {
+        return ResponseEntity.ok(convertToResponse(this.userService.createUser(
+                user)));
     }
 }
