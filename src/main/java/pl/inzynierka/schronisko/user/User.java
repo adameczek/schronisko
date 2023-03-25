@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import pl.inzynierka.schronisko.shelters.Shelter;
 import pl.inzynierka.schronisko.user.validators.ValidPassword;
 
 import java.time.LocalDateTime;
@@ -62,6 +63,8 @@ public class User {
     @Builder.Default
     @Schema(description = "Is user account active")
     private boolean active = true;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Shelter shelter;
 
     public boolean hasRoles(Role... roles) {
         return Arrays.stream(roles).allMatch(role -> getRoles().contains(role));

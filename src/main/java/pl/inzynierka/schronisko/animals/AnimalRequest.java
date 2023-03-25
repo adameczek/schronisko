@@ -31,4 +31,10 @@ public class AnimalRequest {
             example = "mily, gryzie tylko dzieci"
     )
     private String description;
+    @NotNull
+    @Schema(
+            description = "Name of animal shelter",
+            example = "Pieskowo"
+    )
+    private String shelter;
 }
