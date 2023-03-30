@@ -1,20 +1,20 @@
-package pl.inzynierka.schronisko.shelters;
+package pl.inzynierka.schronisko.shelters.models;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.LastModifiedDate;
 import pl.inzynierka.schronisko.animals.Animal;
 import pl.inzynierka.schronisko.user.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Builder
 @Setter
 public class Shelter {
     @Id
@@ -22,13 +22,17 @@ public class Shelter {
     private long id;
     @Column(unique = true, nullable = false)
     private String name;
-    @OneToMany
+    @LastModifiedDate
+    LocalDateTime updatedAt;
+    @OneToOne
+    private User owner;
+    @OneToMany(fetch = FetchType.LAZY)
     private List<User> employees;
-    @OneToMany
-    private List<Animal> animals;
     @Size(min = 0, max = 5000)
     private String description;
-    @OneToOne
+    @OneToMany(fetch = FetchType.LAZY)
+    private List<Animal> animals;
+    @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(unique = true, nullable = false)
-    private Address location;
+    private Address address;
 }

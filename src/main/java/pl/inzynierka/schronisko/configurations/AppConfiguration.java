@@ -14,7 +14,6 @@ public class AppConfiguration {
     public ModelMapper modelMapper() {
         var modelmapper = new ModelMapper();
         setAnimalToAnimalResponseMapping(modelmapper);
-
         return modelmapper;
     }
 

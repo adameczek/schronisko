@@ -11,6 +11,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Component;
 import pl.inzynierka.schronisko.configurations.security.UserPrincipal;
+import pl.inzynierka.schronisko.shelters.models.Shelter;
 import pl.inzynierka.schronisko.user.Role;
 import pl.inzynierka.schronisko.user.User;
 
@@ -54,6 +55,11 @@ public class JwtTokenProvider {
         UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
         claims.setId(String.valueOf(user.getUser().getId()));
         claims.put("username", user.getUser().getUsername());
+
+        if (user.getUser().getShelter() != null) {
+            claims.put("shelter", user.getUser().getShelter().getName());
+        }
+
         Date now = new Date();
         Date validity =
                 new Date(now.getTime() + this.jwtProperties.getValidityInMs());
@@ -81,11 +87,14 @@ public class JwtTokenProvider {
                 AuthorityUtils.commaSeparatedStringToAuthorityList(
                         authoritiesClaim.toString());
 
+        String shelterName = claims.get("shelter", String.class);
+
         User user =
                 User.builder().username(String.valueOf(claims.get("username")))
                         .email(claims.getSubject())
                         .id(Long.parseLong(claims.getId()))
                         .password("")
+                        .shelter(Shelter.builder().name(shelterName).build())
                         .roles(authorities.stream()
                                        .map(grantedAuthority -> Role.valueOf(
                                                grantedAuthority.getAuthority()))

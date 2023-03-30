@@ -42,20 +42,15 @@ public class UserService {
         return userRepository.findFirstByUsername(username);
     }
 
-    public User updateUser(String email,
-                           UserUpdateRequest newUserData,
-                           User loggedUserDetails) throws UserServiceException {
-        if (!email.equals(loggedUserDetails.getEmail()) && !loggedUserDetails.getRoles()
-                .contains(Role.ADMIN)) throw new UserServiceException(
-                "Insufficient permissions to edit this user!");
-
+    public User updateUser(String email, UserUpdateRequest newUserData) throws
+            UserServiceException {
         Optional<User> optionalUser = userRepository.findFirstByEmail(email);
 
         if (optionalUser.isEmpty()) throw new UserServiceException(
                 "Użytkownik z podanym mailem nie istnieje!");
 
-        if (newUserData.getPassword() != null)
-            newUserData.setPassword(passwordEncoder.encode(newUserData.getPassword()));
+        if (newUserData.getPassword() != null) newUserData.setPassword(
+                passwordEncoder.encode(newUserData.getPassword()));
 
         User updatedUserData = optionalUser.get();
 
@@ -63,8 +58,7 @@ public class UserService {
             ModelMapper mapper = new ModelMapper();
             mapper.getConfiguration()
                     .setSkipNullEnabled(true)
-                    .setMatchingStrategy(
-                            MatchingStrategies.STRICT);
+                    .setMatchingStrategy(MatchingStrategies.STRICT);
 
             mapper.map(newUserData, updatedUserData);
             updatedUserData.setUpdated(LocalDateTime.now());
@@ -76,5 +70,9 @@ public class UserService {
         }
 
         return userRepository.save(updatedUserData);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findFirstByEmail(email);
     }
 }

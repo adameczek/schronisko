@@ -1,5 +1,6 @@
-package pl.inzynierka.schronisko.shelters;
+package pl.inzynierka.schronisko.shelters.models;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -19,7 +20,8 @@ public class Address {
     private long id;
     @Column(nullable = false)
     @NotNull
-    @Size(min = 5, max = 5)
+    @Size(min = 6, max = 6)
+    @Schema(description = "Post code", example = "12-345")
     private String postCode;
     @Column(nullable = false)
     @Size(min = 1, max = 100)
@@ -34,6 +36,4 @@ public class Address {
     private String street;
     @Size(min = 0, max = 100)
     private String houseNumber;
-    @OneToOne(fetch = FetchType.LAZY)
-    private Shelter shelter;
 }

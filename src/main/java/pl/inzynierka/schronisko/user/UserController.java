@@ -62,7 +62,8 @@ public class UserController {
     ResponseEntity<UserResponse> getUser(@PathVariable final String username) {
         final Optional<User> user = userService.findByUsername(username);
 
-        return user.map(this::convertToResponse).map(ResponseEntity::ok)
+        return user.map(this::convertToResponse)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
@@ -72,7 +73,7 @@ public class UserController {
             summary = "Updates user",
             description = "Updates user provided in path variable. Users without admin role cannot update other users."
     )
-    ResponseEntity<UserResponse> updateUser(@PathVariable final String username,
+    ResponseEntity<UserResponse> updateUser(@PathVariable final String email,
                                             @RequestBody
                                             final UserUpdateRequest user) throws
             UserServiceException {
@@ -80,10 +81,13 @@ public class UserController {
                 SecurityContextHolder.getContext().getAuthentication();
         final User userDetails = (User) authentication.getPrincipal();
 
+        if (!email.equals(userDetails.getEmail()) && !userDetails.getRoles()
+                .contains(Role.ADMIN)) throw new UserServiceException(
+                "Insufficient permissions to edit this user!");
+
         return ResponseEntity.ok(convertToResponse(this.userService.updateUser(
-                username,
-                user,
-                userDetails)));
+                email,
+                user)));
     }
 
 

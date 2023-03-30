@@ -24,6 +24,9 @@ spring:
   jackson:
     serialization:
       write-dates-as-timestamps: false
+  data:
+    rest:
+      max-page-size: 50
 settings:
   user-service:
     editable-fields:
