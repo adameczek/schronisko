@@ -2,6 +2,10 @@ package pl.inzynierka.schronisko.shelters;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -54,6 +58,17 @@ public class ShelterController {
             summary = "Create shelter",
             description = "Creates a shelter and returns it"
     )
+    @ApiResponses(
+            value = {@ApiResponse(
+                    responseCode = "200",
+                    description = "Shelter created",
+                    content = {@Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ShelterResponse.class)
+                    )}
+            )
+            }
+    )
     ResponseEntity<ShelterResponse> createShelter(@Valid @RequestBody
                                                   ShelterRequest request) {
         return ResponseEntity.ok(convertToResponse(shelterService.createShelter(
@@ -78,11 +93,11 @@ public class ShelterController {
             summary = "Update Shelter",
             description = "Updates shelter with given data"
     )
-    ResponseEntity<ShelterResponse> updateShelter(@RequestBody
-                                                  JsonNode request,
+    ResponseEntity<ShelterResponse> updateShelter(@RequestBody JsonNode request,
                                                   @PathVariable String name) {
         return ResponseEntity.ok(convertToResponse(shelterService.updateShelter(
-                request, name)));
+                request,
+                name)));
     }
 
     @DeleteMapping("/{name}")

@@ -11,6 +11,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.context.request.WebRequest;
 import pl.inzynierka.schronisko.animals.InsufficentUserRoleException;
 import pl.inzynierka.schronisko.common.ErrorResponse;
@@ -23,6 +24,7 @@ import java.util.Map;
 @Slf4j
 public class CommonExceptionsHandler {
     @ExceptionHandler({Exception.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ResponseEntity<ErrorResponse> handleUnknownException(Exception e,
                                                                 WebRequest request) {
         log.error("Unknown exception occured!");
@@ -33,6 +35,7 @@ public class CommonExceptionsHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     ResponseEntity<Map<String, String>> onNonValidRequest(final MethodArgumentNotValidException e,
                                                           final WebRequest request) {
         log.error(
@@ -49,6 +52,7 @@ public class CommonExceptionsHandler {
     }
 
     @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     ResponseEntity<Map<String, String>> onBadField(final ConstraintViolationException e,
                                                    final WebRequest request) {
         log.error(
@@ -68,6 +72,7 @@ public class CommonExceptionsHandler {
 
 
     @ExceptionHandler(InsufficentUserRoleException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     ResponseEntity<ErrorResponse> onInsufficientUserRoles(Exception e,
                                                           WebRequest request) {
         log.error("User with insufficient roles tried to make request: {}",
@@ -78,6 +83,7 @@ public class CommonExceptionsHandler {
     }
 
     @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     ResponseEntity<ErrorResponse> onAccessDenied(Exception e,
                                                  WebRequest request) {
         log.error("Access denied for request: {}",
@@ -88,6 +94,7 @@ public class CommonExceptionsHandler {
     }
 
     @ExceptionHandler(SchroniskoException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     ResponseEntity<ErrorResponse> onAppException(Exception e,
                                                  WebRequest request) {
         log.error("Exception occurred: {} for request: {}",
