@@ -1,5 +1,6 @@
 package pl.inzynierka.schronisko.shelters.models;
 
+import com.fasterxml.jackson.annotation.JsonMerge;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -34,5 +35,6 @@ public class Shelter {
     private List<Animal> animals;
     @OneToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(unique = true, nullable = false)
+    @JsonMerge
     private Address address;
 }

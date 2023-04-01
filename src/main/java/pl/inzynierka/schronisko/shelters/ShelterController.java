@@ -1,5 +1,6 @@
 package pl.inzynierka.schronisko.shelters;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -77,12 +78,11 @@ public class ShelterController {
             summary = "Update Shelter",
             description = "Updates shelter with given data"
     )
-    ResponseEntity<ShelterResponse> updateShelter(@Valid @RequestBody
-                                                  ShelterRequest request,
+    ResponseEntity<ShelterResponse> updateShelter(@RequestBody
+                                                  JsonNode request,
                                                   @PathVariable String name) {
-        request.setName(name);
         return ResponseEntity.ok(convertToResponse(shelterService.updateShelter(
-                request)));
+                request, name)));
     }
 
     @DeleteMapping("/{name}")

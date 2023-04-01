@@ -1,5 +1,6 @@
 package pl.inzynierka.schronisko.shelters;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import pl.inzynierka.schronisko.common.SimpleResponse;
@@ -18,6 +19,8 @@ public interface ShelterService {
     Shelter createShelter(ShelterRequest request);
 
     Shelter updateShelter(ShelterRequest request);
+
+    Shelter updateShelter(JsonNode request, String shelterName);
 
     SimpleResponse deleteShelter(String name);
 

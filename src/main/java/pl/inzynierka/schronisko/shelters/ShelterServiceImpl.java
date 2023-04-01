@@ -1,5 +1,6 @@
 package pl.inzynierka.schronisko.shelters;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.inzynierka.schronisko.animals.Animal;
 import pl.inzynierka.schronisko.animals.AnimalService;
+import pl.inzynierka.schronisko.common.RequestToObjectMapper;
+import pl.inzynierka.schronisko.common.RequestToObjectMapperException;
 import pl.inzynierka.schronisko.common.SimpleResponse;
 import pl.inzynierka.schronisko.shelters.models.Address;
 import pl.inzynierka.schronisko.shelters.models.Shelter;
@@ -70,7 +73,6 @@ public class ShelterServiceImpl implements ShelterService {
         try {
             var modelMapperForUpdate = new ModelMapper();
             modelMapperForUpdate.getConfiguration().setSkipNullEnabled(true);
-
             modelMapperForUpdate.map(request, savedShelter);
             savedShelter.setUpdatedAt(LocalDateTime.now());
 
@@ -80,6 +82,32 @@ public class ShelterServiceImpl implements ShelterService {
             log.error("Updating shelter failed! Data for shelter update: {}",
                       request);
             throw new ShelterServiceException(e);
+        }
+    }
+
+    @Override
+    public Shelter updateShelter(JsonNode request, String shelterName) {
+        Shelter savedShelter = repository.findFirstByName(shelterName)
+                .orElseThrow(() -> new ShelterServiceException(
+                        "Nie odnaleziono schroniska z podaną nazwą!"));
+
+        try {
+            Shelter updatedShelter =
+                    RequestToObjectMapper.mapRequestToObjectForUpdate(request,
+                                                                      savedShelter,
+                                                                      ShelterRequest.class,
+                                                                      Shelter.class,
+                                                                      modelMapper);
+            if (updatedShelter.getAddress() == null)
+                throw new ShelterServiceException("Adres nie może być pusty!");
+
+            addressRepository.save(updatedShelter.getAddress());
+            return repository.save(updatedShelter);
+        } catch (RequestToObjectMapperException e) {
+            log.error("Error occured while trying to update {}", shelterName);
+            e.printStackTrace();
+            throw new ShelterServiceException(
+                    "Wystąpił problem przy aktualizowaniu danych schroniska!");
         }
     }
 

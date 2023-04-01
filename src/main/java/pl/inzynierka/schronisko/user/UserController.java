@@ -1,5 +1,6 @@
 package pl.inzynierka.schronisko.user;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -67,15 +68,15 @@ public class UserController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{username}")
+    @PutMapping()
     @PreAuthorize("hasAuthority('USER')")
     @Operation(
             summary = "Updates user",
             description = "Updates user provided in path variable. Users without admin role cannot update other users."
     )
-    ResponseEntity<UserResponse> updateUser(@PathVariable final String email,
+    ResponseEntity<UserResponse> updateUser(@RequestParam final String email,
                                             @RequestBody
-                                            final UserUpdateRequest user) throws
+                                            final JsonNode user) throws
             UserServiceException {
         final Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
@@ -86,8 +87,8 @@ public class UserController {
                 "Insufficient permissions to edit this user!");
 
         return ResponseEntity.ok(convertToResponse(this.userService.updateUser(
-                email,
-                user)));
+                user,
+                email)));
     }
 
 
