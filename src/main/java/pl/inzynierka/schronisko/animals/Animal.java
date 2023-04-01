@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import pl.inzynierka.schronisko.animals.tags.AnimalTag;
 import pl.inzynierka.schronisko.animals.types.AnimalType;
 import pl.inzynierka.schronisko.configurations.validationscopes.RepositorySave;
+import pl.inzynierka.schronisko.shelters.models.Shelter;
 import pl.inzynierka.schronisko.user.User;
 
 import java.time.LocalDateTime;
@@ -56,4 +57,6 @@ public class Animal {
     private LocalDateTime created;
     @LastModifiedDate
     private LocalDateTime updated;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Shelter shelter;
 }

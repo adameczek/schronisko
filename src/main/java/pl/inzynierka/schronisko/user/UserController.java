@@ -1,5 +1,6 @@
 package pl.inzynierka.schronisko.user;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -62,28 +63,32 @@ public class UserController {
     ResponseEntity<UserResponse> getUser(@PathVariable final String username) {
         final Optional<User> user = userService.findByUsername(username);
 
-        return user.map(this::convertToResponse).map(ResponseEntity::ok)
+        return user.map(this::convertToResponse)
+                .map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @PutMapping("/{username}")
+    @PutMapping()
     @PreAuthorize("hasAuthority('USER')")
     @Operation(
             summary = "Updates user",
             description = "Updates user provided in path variable. Users without admin role cannot update other users."
     )
-    ResponseEntity<UserResponse> updateUser(@PathVariable final String username,
+    ResponseEntity<UserResponse> updateUser(@RequestParam final String email,
                                             @RequestBody
-                                            final UserUpdateRequest user) throws
+                                            final JsonNode user) throws
             UserServiceException {
         final Authentication authentication =
                 SecurityContextHolder.getContext().getAuthentication();
         final User userDetails = (User) authentication.getPrincipal();
 
+        if (!email.equals(userDetails.getEmail()) && !userDetails.getRoles()
+                .contains(Role.ADMIN)) throw new UserServiceException(
+                "Insufficient permissions to edit this user!");
+
         return ResponseEntity.ok(convertToResponse(this.userService.updateUser(
-                username,
                 user,
-                userDetails)));
+                email)));
     }
 
 
