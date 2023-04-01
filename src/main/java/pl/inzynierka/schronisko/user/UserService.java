@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Validator;
 import pl.inzynierka.schronisko.common.RequestToObjectMapper;
 import pl.inzynierka.schronisko.common.RequestToObjectMapperException;
 
@@ -21,6 +22,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final ModelMapper modelMapper;
+    private final Validator validator;
 
     public User createUser(User user) throws UserServiceException {
         String encodedPassword = passwordEncoder.encode(user.getPassword());
@@ -95,7 +97,7 @@ public class UserService {
 
             updatedUser.setUpdated(LocalDateTime.now());
 
-            return userRepository.save(updatedUser);
+            return userRepository.saveAndFlush(updatedUser);
         } catch (RequestToObjectMapperException e) {
             throw new RuntimeException(e);
         }
