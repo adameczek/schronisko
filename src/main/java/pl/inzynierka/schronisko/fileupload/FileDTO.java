@@ -1,4 +1,4 @@
-package fileupload;
+package pl.inzynierka.schronisko.fileupload;
 
 import jakarta.persistence.*;
 import pl.inzynierka.schronisko.user.User;
