@@ -24,12 +24,18 @@ import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
-@Tag(name = "Users", description = "provides user data")
+@RequestMapping(
+        value = "/users",
+        produces = MediaType.APPLICATION_JSON_VALUE
+)
+@Tag(
+        name = "Users",
+        description = "provides user data"
+)
 public class UserController {
     private final UserService userService;
     private final ModelMapper modelMapper;
-
+    
     @GetMapping
     @PreAuthorize("hasAuthority('USER')")
     @Operation(
@@ -39,72 +45,75 @@ public class UserController {
     )
     ResponseEntity<Page<UserResponse>> getUsers(
             @ParameterObject Pageable pageable) {
-        return ResponseEntity.ok(this.userService.getUsers(pageable)
-                                         .map(this::convertToResponse));
+        return ResponseEntity.ok(this.userService.getUsers(pageable).map(this::convertToResponse));
     }
-
+    
     private UserResponse convertToResponse(User user) {
         return modelMapper.map(user, UserResponse.class);
     }
-
+    
     @GetMapping("/me")
     @PreAuthorize("hasAuthority('USER')")
-    @Operation(summary = "Gets authenticated user", tags = {"user"})
+    @Operation(
+            summary = "Gets authenticated user",
+            tags = {"user"}
+    )
     ResponseEntity<UserResponse> getLoggedUser() {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final User userDetails = (User) authentication.getPrincipal();
-        return getUser(userDetails.getUsername());
+        
+        return getUser(userDetails.getEmail(), false);
     }
-
+    
     @GetMapping("/{username}")
     @PreAuthorize("hasAuthority('USER')")
     @Operation(summary = "Get user by username")
-    ResponseEntity<UserResponse> getUser(@PathVariable final String username) {
-        final Optional<User> user = userService.findByUsername(username);
-
-        return user.map(this::convertToResponse)
-                .map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
+    ResponseEntity<UserResponse> getUser(
+            @PathVariable
+            final String username,
+            @RequestParam boolean byUsername) {
+        final Optional<User> user = byUsername ? userService.findByUsername(username) : userService.findByEmail(
+                username);
+        
+        return user.map(this::convertToResponse).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound()
+                                                                                                       .build());
     }
-
+    
+    
     @PutMapping()
     @PreAuthorize("hasAuthority('USER')")
     @Operation(
             summary = "Updates user",
-            description = "Updates user provided in path variable. Users without admin role cannot update other users."
+            description = "Updates user provided in path variable. Users without admin role cannot update other "
+                          + "users."
     )
-    ResponseEntity<UserResponse> updateUser(@RequestParam final String email,
-                                            @RequestBody
-                                            final JsonNode user) throws
-            UserServiceException {
-        final Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+    ResponseEntity<UserResponse> updateUser(
+            @RequestParam
+            final String email,
+            @RequestBody
+            final JsonNode user) throws UserServiceException {
+        final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final User userDetails = (User) authentication.getPrincipal();
-
-        if (!email.equals(userDetails.getEmail()) && !userDetails.getRoles()
-                .contains(Role.ADMIN)) throw new UserServiceException(
-                "Insufficient permissions to edit this user!");
-
-        return ResponseEntity.ok(convertToResponse(this.userService.updateUser(
-                user,
-                email)));
+        
+        if (!email.equals(userDetails.getEmail()) && !userDetails.getRoles().contains(Role.ADMIN))
+            throw new UserServiceException("Insufficient permissions to edit this user!");
+        
+        return ResponseEntity.ok(convertToResponse(this.userService.updateUser(user, email)));
     }
-
-
+    
+    
     @ExceptionHandler(UserServiceException.class)
-    ResponseEntity<ErrorResponse> userServiceError(final UserServiceException e,
-                                                   final WebRequest request) {
-        return ResponseEntity.badRequest()
-                .body(new ErrorResponse(LocalDateTime.now(), e.getMessage()));
+    ResponseEntity<ErrorResponse> userServiceError(final UserServiceException e, final WebRequest request) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(LocalDateTime.now(), e.getMessage()));
     }
-
+    
     @SneakyThrows
     @PostMapping
     @Operation(summary = "Creates user")
     ResponseEntity<UserResponse> createUser(
-            @Valid @RequestBody final User user) {
-        return ResponseEntity.ok(convertToResponse(this.userService.createUser(
-                user)));
+            @Valid
+            @RequestBody
+            final User user) {
+        return ResponseEntity.ok(convertToResponse(this.userService.createUser(user)));
     }
 }

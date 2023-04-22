@@ -22,11 +22,20 @@ public class AnimalTag {
     @Schema(description = "id of tag")
     private long id;
     @NotNull
-    @Size(min = 1, max = 50)
-    @Schema(description = "unique tag value", example = "rudy")
-    @Column(unique = true, nullable = false)
+    @Size(
+            min = 1,
+            max = 50
+    )
+    @Schema(
+            description = "unique tag value",
+            example = "rudy"
+    )
+    @Column(
+            unique = true,
+            nullable = false
+    )
     private String value;
-
+    
     public AnimalTag(String value) {
         this.value = value;
     }

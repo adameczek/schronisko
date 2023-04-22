@@ -11,7 +11,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories
 @ConfigurationPropertiesScan
 public class SchroniskoApplication {
-
+    
     public static void main(String[] args) {
         SpringApplication.run(SchroniskoApplication.class, args);
     }

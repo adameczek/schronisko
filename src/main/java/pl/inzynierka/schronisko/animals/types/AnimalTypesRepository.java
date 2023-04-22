@@ -6,6 +6,6 @@ import java.util.Optional;
 
 public interface AnimalTypesRepository extends JpaRepository<AnimalType, Long> {
     Optional<AnimalType> findFirstByValue(String value);
-
+    
     boolean deleteByValue(String value);
 }

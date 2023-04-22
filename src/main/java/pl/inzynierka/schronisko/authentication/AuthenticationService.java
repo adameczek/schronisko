@@ -14,24 +14,22 @@ import pl.inzynierka.schronisko.configurations.security.jwt.JwtTokenProvider;
 public class AuthenticationService {
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
-
+    
     public ResponseEntity<AuthResponse> loginRequest(final AuthRequest request) {
         AuthResponse login = login(request);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.AUTHORIZATION,
-                        "Bearer " + login.getToken())
-                .body(login);
+        
+        return ResponseEntity.ok().header(HttpHeaders.AUTHORIZATION, "Bearer " + login.getToken()).body(login);
     }
-
+    
     public AuthResponse login(final AuthRequest request) {
-        final Authentication authenticate =
-                this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()));
-
+        final Authentication
+                authenticate
+                =
+                this.authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),
+                                                                                                  request.getPassword()));
+        
         final String token = this.jwtTokenProvider.createToken(authenticate);
-
+        
         return new AuthResponse(token);
     }
 }

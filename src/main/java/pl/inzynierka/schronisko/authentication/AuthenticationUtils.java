@@ -6,8 +6,7 @@ import pl.inzynierka.schronisko.user.User;
 
 public class AuthenticationUtils {
     public static User getAuthenticatedUser() {
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return (User) authentication.getPrincipal();
     }
 }

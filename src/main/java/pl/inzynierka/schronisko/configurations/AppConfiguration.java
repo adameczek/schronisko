@@ -16,19 +16,15 @@ public class AppConfiguration {
         setAnimalToAnimalResponseMapping(modelmapper);
         return modelmapper;
     }
-
+    
     private void setAnimalToAnimalResponseMapping(ModelMapper modelMapper) {
-        TypeMap<Animal, AnimalResponse> typeMap = modelMapper.createTypeMap(
-                Animal.class,
-                AnimalResponse.class);
-
-        typeMap.addMappings(
-                mapper -> mapper.map(src -> src.getType().getValue(),
-                                     AnimalResponse::setType)
-        );
-        typeMap.addMappings(
-                mapper -> mapper.using(new TagListConverter())
-                        .map(Animal::getTags, AnimalResponse::setTags)
-        );
+        TypeMap<Animal, AnimalResponse> typeMap = modelMapper.createTypeMap(Animal.class, AnimalResponse.class);
+        
+        typeMap.addMappings(mapper -> mapper.map(src -> src.getType().getValue(), AnimalResponse::setType));
+        typeMap.addMappings(mapper -> mapper.using(new TagListConverter())
+                                            .map(Animal::getTags, AnimalResponse::setTags));
+        typeMap.addMappings(mapper -> mapper.when(mappingContext -> ((Animal) mappingContext.getSource()).getRace()
+                                                                    != null)
+                                            .map(src -> src.getRace().getValue(), AnimalResponse::setRace));
     }
 }

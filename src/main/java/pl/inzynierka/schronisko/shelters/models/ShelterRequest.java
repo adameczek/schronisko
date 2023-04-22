@@ -14,9 +14,15 @@ import lombok.Setter;
 @Setter
 public class ShelterRequest {
     @NotNull
-    @Size(min = 1, max = 100)
+    @Size(
+            min = 1,
+            max = 100
+    )
     private String name;
-    @Size(min = 0, max = 5000)
+    @Size(
+            min = 0,
+            max = 5000
+    )
     private String description;
     @NotNull
     @JsonMerge

@@ -20,20 +20,38 @@ public class Address {
     private long id;
     @Column(nullable = false)
     @NotNull
-    @Size(min = 6, max = 6)
-    @Schema(description = "Post code", example = "12-345")
+    @Size(
+            min = 6,
+            max = 6
+    )
+    @Schema(
+            description = "Post code",
+            example = "12-345"
+    )
     private String postCode;
     @Column(nullable = false)
-    @Size(min = 1, max = 100)
+    @Size(
+            min = 1,
+            max = 100
+    )
     @NotNull
     private String city;
     @Column(nullable = false)
-    @Size(min = 1, max = 100)
+    @Size(
+            min = 1,
+            max = 100
+    )
     private String voivodeship;
     @Column(nullable = false)
     @NotNull
-    @Size(min = 1, max = 100)
+    @Size(
+            min = 1,
+            max = 100
+    )
     private String street;
-    @Size(min = 0, max = 100)
+    @Size(
+            min = 0,
+            max = 100
+    )
     private String houseNumber;
 }

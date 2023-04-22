@@ -33,19 +33,17 @@ import pl.inzynierka.schronisko.configurations.security.jwt.JwtTokenProvider;
 public class WebSecurityConfiguration {
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtTokenProvider jwtTokenProvider;
-
-
+    
+    
     @Bean
-    public AuthenticationManager customAuthenticationManager(HttpSecurity http) throws
-            Exception {
-        AuthenticationManagerBuilder authenticationManagerBuilder =
-                http.getSharedObject
-                        (AuthenticationManagerBuilder.class);
+    public AuthenticationManager customAuthenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(
+                AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.userDetailsService(userDetailsService)
-                .passwordEncoder(bCryptPasswordEncoder());
+                                    .passwordEncoder(bCryptPasswordEncoder());
         return authenticationManagerBuilder.build();
     }
-
+    
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
@@ -56,10 +54,9 @@ public class WebSecurityConfiguration {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }*/
-
+    
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
-            Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // @formatter:off
         http
                 .authorizeHttpRequests((authorize) -> authorize
@@ -85,17 +82,15 @@ public class WebSecurityConfiguration {
         // @formatter:on
         return http.build();
     }
-
+    
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source =
-                new UrlBasedCorsConfigurationSource();
-
-        CorsConfiguration corsConfiguration =
-                new CorsConfiguration().applyPermitDefaultValues();
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        
+        CorsConfiguration corsConfiguration = new CorsConfiguration().applyPermitDefaultValues();
         source.registerCorsConfiguration("/**", corsConfiguration);
-
+        
         return source;
     }
-
+    
 }

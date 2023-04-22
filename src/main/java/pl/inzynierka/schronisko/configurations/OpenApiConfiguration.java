@@ -23,5 +23,4 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
         type = SecuritySchemeType.HTTP,
         in = SecuritySchemeIn.HEADER
 )
-public class OpenApiConfiguration {
-}
+public class OpenApiConfiguration {}

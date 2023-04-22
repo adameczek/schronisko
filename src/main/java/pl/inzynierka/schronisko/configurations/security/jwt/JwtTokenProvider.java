@@ -28,89 +28,75 @@ import static java.util.stream.Collectors.joining;
 @RequiredArgsConstructor
 public class JwtTokenProvider {
     private static final String AUTHORITIES_KEY = "roles";
-
+    
     private final JwtProperties jwtProperties;
-
+    
     private SecretKey secretKey;
-
+    
     @PostConstruct
     public void init() {
-        var secret = Base64.getEncoder()
-                .encodeToString(this.jwtProperties.getSecretKey().getBytes());
-        this.secretKey =
-                Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+        var secret = Base64.getEncoder().encodeToString(this.jwtProperties.getSecretKey().getBytes());
+        this.secretKey = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
-
+    
     public String createToken(Authentication authentication) {
         String username = authentication.getName();
-        Collection<? extends GrantedAuthority> authorities =
-                authentication.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Claims claims = Jwts.claims().setSubject(username);
         if (!authorities.isEmpty()) {
             claims.put(AUTHORITIES_KEY,
-                       authorities.stream()
-                               .map(GrantedAuthority::getAuthority)
-                               .collect(joining(",")));
+                       authorities.stream().map(GrantedAuthority::getAuthority).collect(joining(",")));
         }
         UserPrincipal user = (UserPrincipal) authentication.getPrincipal();
         claims.setId(String.valueOf(user.getUser().getId()));
         claims.put("username", user.getUser().getUsername());
-
+        claims.put("email", user.getUser().getEmail());
+        
         if (user.getUser().getShelter() != null) {
             claims.put("shelter", user.getUser().getShelter().getName());
         }
-
+        
         Date now = new Date();
-        Date validity =
-                new Date(now.getTime() + this.jwtProperties.getValidityInMs());
-
+        Date validity = new Date(now.getTime() + this.jwtProperties.getValidityInMs());
+        
         return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(this.secretKey, SignatureAlgorithm.HS256)
-                .compact();
-
+                   .setClaims(claims)
+                   .setIssuedAt(now)
+                   .setExpiration(validity)
+                   .signWith(this.secretKey,
+                             SignatureAlgorithm.HS256)
+                   .compact();
+        
     }
-
+    
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(this.secretKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-
+        Claims claims = Jwts.parserBuilder().setSigningKey(this.secretKey).build().parseClaimsJws(token).getBody();
+        
         Object authoritiesClaim = claims.get(AUTHORITIES_KEY);
-
-        Collection<? extends GrantedAuthority> authorities =
-                null == authoritiesClaim ? AuthorityUtils.NO_AUTHORITIES :
-                AuthorityUtils.commaSeparatedStringToAuthorityList(
-                        authoritiesClaim.toString());
-
+        
+        Collection<? extends GrantedAuthority> authorities = null == authoritiesClaim ?
+                                                             AuthorityUtils.NO_AUTHORITIES :
+                                                             AuthorityUtils.commaSeparatedStringToAuthorityList(
+                                                                     authoritiesClaim.toString());
+        
         String shelterName = claims.get("shelter", String.class);
-
-        User user =
-                User.builder().username(String.valueOf(claims.get("username")))
+        
+        User user = User.builder()
+                        .username(String.valueOf(claims.get("username")))
                         .email(claims.getSubject())
                         .id(Long.parseLong(claims.getId()))
                         .password("")
                         .shelter(Shelter.builder().name(shelterName).build())
                         .roles(authorities.stream()
-                                       .map(grantedAuthority -> Role.valueOf(
-                                               grantedAuthority.getAuthority()))
-                                       .toList())
+                                          .map(grantedAuthority -> Role.valueOf(grantedAuthority.getAuthority()))
+                                          .toList())
                         .build();
-        return new UsernamePasswordAuthenticationToken(user,
-                                                       token,
-                                                       authorities);
+        return new UsernamePasswordAuthenticationToken(user, token, authorities);
     }
-
+    
     public boolean validateToken(String token) {
         try {
-            Jws<Claims> claims = Jwts.parserBuilder()
-                    .setSigningKey(this.secretKey)
-                    .build()
-                    .parseClaimsJws(token);
+            Jws<Claims> claims = Jwts.parserBuilder().setSigningKey(this.secretKey).build().parseClaimsJws(token);
             // parseClaimsJws will check expiration date. No need do here.
             log.info("expiration date: {}", claims.getBody().getExpiration());
             return true;

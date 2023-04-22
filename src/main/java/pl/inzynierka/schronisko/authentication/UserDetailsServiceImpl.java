@@ -12,13 +12,11 @@ import pl.inzynierka.schronisko.user.UserRepository;
 @RequiredArgsConstructor
 public class UserDetailsServiceImpl implements UserDetailsService {
     private final UserRepository userRepository;
-
-  @Override
-  public UserDetails loadUserByUsername(String email) throws
-          UsernameNotFoundException {
-      return userRepository
-              .findFirstByEmail(email)
-              .map(UserPrincipal::new)
-              .orElseThrow(() -> new UsernameNotFoundException(email));
-  }
+    
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        return userRepository.findFirstByEmail(email)
+                             .map(UserPrincipal::new)
+                             .orElseThrow(() -> new UsernameNotFoundException(email));
+    }
 }

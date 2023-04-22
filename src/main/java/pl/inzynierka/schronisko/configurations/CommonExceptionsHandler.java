@@ -25,23 +25,20 @@ import java.util.Map;
 public class CommonExceptionsHandler {
     @ExceptionHandler({Exception.class})
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<ErrorResponse> handleUnknownException(Exception e,
-                                                                WebRequest request) {
+    public ResponseEntity<ErrorResponse> handleUnknownException(Exception e, WebRequest request) {
         log.error("Unknown exception occured!");
         e.printStackTrace();
-
+        
         return ResponseEntity.internalServerError().body(ErrorResponse.now(
                 "Unknown exception occured, please contact administrators!"));
     }
-
+    
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ResponseEntity<Map<String, String>> onNonValidRequest(final MethodArgumentNotValidException e,
-                                                          final WebRequest request) {
-        log.error(
-                "Method argument not valid exception happaned!\nRequest info: {}",
-                request.getDescription(true));
-
+    ResponseEntity<Map<String, String>> onNonValidRequest(
+            final MethodArgumentNotValidException e, final WebRequest request) {
+        log.error("Method argument not valid exception happaned!\nRequest info: {}", request.getDescription(true));
+        
         Map<String, String> errors = new HashMap<>();
         e.getBindingResult().getAllErrors().forEach((error) -> {
             final String fieldName = ((FieldError) error).getField();
@@ -50,58 +47,45 @@ public class CommonExceptionsHandler {
         });
         return ResponseEntity.badRequest().body(errors);
     }
-
+    
     @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ResponseEntity<Map<String, String>> onBadField(final ConstraintViolationException e,
-                                                   final WebRequest request) {
-        log.error(
-                "Method argument not valid exception happaned!\nRequest info: {}",
-                request.getDescription(true));
-
+    ResponseEntity<Map<String, String>> onBadField(
+            final ConstraintViolationException e, final WebRequest request) {
+        log.error("Method argument not valid exception happaned!\nRequest info: {}", request.getDescription(true));
+        
         Map<String, String> errors = new HashMap<>();
-
+        
         for (ConstraintViolation<?> constraintViolation : e.getConstraintViolations()) {
             Path propertyPath = constraintViolation.getPropertyPath();
-            errors.put(propertyPath.toString(),
-                       constraintViolation.getMessage());
+            errors.put(propertyPath.toString(), constraintViolation.getMessage());
         }
-
+        
         return ResponseEntity.badRequest().body(errors);
     }
-
-
+    
+    
     @ExceptionHandler(InsufficentUserRoleException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ResponseEntity<ErrorResponse> onInsufficientUserRoles(Exception e,
-                                                          WebRequest request) {
-        log.error("User with insufficient roles tried to make request: {}",
-                  request.getDescription(true));
-
-        return ResponseEntity.badRequest()
-                .body(ErrorResponse.now(e.getMessage()));
+    ResponseEntity<ErrorResponse> onInsufficientUserRoles(Exception e, WebRequest request) {
+        log.error("User with insufficient roles tried to make request: {}", request.getDescription(true));
+        
+        return ResponseEntity.badRequest().body(ErrorResponse.now(e.getMessage()));
     }
-
+    
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    ResponseEntity<ErrorResponse> onAccessDenied(Exception e,
-                                                 WebRequest request) {
-        log.error("Access denied for request: {}",
-                  request.getDescription(true));
-
-        return ResponseEntity.status(403)
-                .body(ErrorResponse.now("Brak dostępu"));
+    ResponseEntity<ErrorResponse> onAccessDenied(Exception e, WebRequest request) {
+        log.error("Access denied for request: {}", request.getDescription(true));
+        
+        return ResponseEntity.status(403).body(ErrorResponse.now("Brak dostępu"));
     }
-
+    
     @ExceptionHandler(SchroniskoException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    ResponseEntity<ErrorResponse> onAppException(Exception e,
-                                                 WebRequest request) {
-        log.error("Exception occurred: {} for request: {}",
-                  e.getMessage(),
-                  request.getDescription(true));
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.now(e.getMessage()));
+    ResponseEntity<ErrorResponse> onAppException(Exception e, WebRequest request) {
+        log.error("Exception occurred: {} for request: {}", e.getMessage(), request.getDescription(true));
+        
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.now(e.getMessage()));
     }
 }

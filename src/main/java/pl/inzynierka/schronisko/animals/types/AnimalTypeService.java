@@ -17,45 +17,71 @@ import java.util.Optional;
 @AllArgsConstructor
 public class AnimalTypeService {
     private final AnimalTypesRepository animalTypesRepository;
-
+    
     public Page<AnimalType> getAllTypes(Pageable pageable) {
         return animalTypesRepository.findAll(pageable);
     }
-
-    public AnimalType saveAnimalType(AnimalType animalType) throws
-            InsufficentUserRoleException, AnimalTypeServiceException {
-        final User authenticatedUser =
-                AuthenticationUtils.getAuthenticatedUser();
+    
+    public AnimalType saveAnimalType(AnimalType animalType)
+            throws InsufficentUserRoleException, AnimalTypeServiceException {
+        final User authenticatedUser = AuthenticationUtils.getAuthenticatedUser();
         if (authenticatedUser.hasNoRoles(Role.ADMIN, Role.MODERATOR)) {
-            throw new InsufficentUserRoleException(
-                    "To create animal types you need at least moderator role!");
+            throw new InsufficentUserRoleException("To create animal types you need at least moderator role!");
         }
-
+        
         try {
             return animalTypesRepository.save(animalType);
         } catch (DataIntegrityViolationException e) {
-            throw new AnimalTypeServiceException(
-                    "Podany typ zwierzęcia już istnieje.");
+            throw new AnimalTypeServiceException("Podany typ zwierzęcia już istnieje.");
         }
     }
-
-    public SimpleResponse deleteAnimalType(String value) throws
-            InsufficentUserRoleException {
-        final User authenticatedUser =
-                AuthenticationUtils.getAuthenticatedUser();
+    
+    public SimpleResponse deleteAnimalType(String value) throws InsufficentUserRoleException {
+        final User authenticatedUser = AuthenticationUtils.getAuthenticatedUser();
         if (authenticatedUser.hasNoRoles(Role.ADMIN, Role.MODERATOR)) {
-      throw new InsufficentUserRoleException(
-          "To delete animal types you need at least moderator role!");
+            throw new InsufficentUserRoleException("To delete animal types you need at least moderator role!");
+        }
+        
+        // todo add checking if any animals exist with given animal type
+        
+        final var result = animalTypesRepository.deleteByValue(value);
+        
+        return new SimpleResponse(result, null);
     }
-
-    // todo add checking if any animals exist with given animal type
-
-    final var result = animalTypesRepository.deleteByValue(value);
-
-    return new SimpleResponse(result, null);
-  }
-
-  public Optional<AnimalType> findByValue(String value) {
-    return animalTypesRepository.findFirstByValue(value);
-  }
+    
+    public SimpleResponse addRaceToType(String race, String animalType) throws AnimalTypeServiceException {
+        AnimalType type = animalTypesRepository.findFirstByValue(animalType)
+                                               .orElseThrow(() -> new AnimalTypeServiceException(
+                                                       "Nie znaleziono zwierząt o podanej rasie"));
+        
+        boolean result = type.getRaces().add(race);
+        
+        if (result) {
+            animalTypesRepository.save(type);
+            
+            return new SimpleResponse(true, null);
+        } else {
+            throw new AnimalTypeServiceException("Dana rasa już istnieje dla: " + animalType);
+        }
+    }
+    
+    public Optional<AnimalType> findByValue(String value) {
+        return animalTypesRepository.findFirstByValue(value);
+    }
+    
+    public SimpleResponse removeRaceFromType(String race, String type) throws AnimalTypeServiceException {
+        AnimalType animalType = animalTypesRepository.findFirstByValue(type)
+                                                     .orElseThrow(() -> new AnimalTypeServiceException(
+                                                             "Nie znaleziono zwierząt o podanej rasie"));
+        
+        boolean result = animalType.getRaces().remove(race);
+        
+        if (result) {
+            animalTypesRepository.save(animalType);
+            
+            return new SimpleResponse(true, String.format("Usunięto rasę: %s z %s", race, type));
+        } else {
+            throw new AnimalTypeServiceException("Nie odnaleziono danej rasy w tej kategorii zwierząt!");
+        }
+    }
 }

@@ -1,3 +1,5 @@
+server:
+  port: 25000
 security:
   user:
     name: root
@@ -12,9 +14,9 @@ spring:
         format_sql: true
     show-sql: true
   datasource:
-    url: jdbc:postgresql://0.0.0.0:5433/testowa
-    username: testuser
-    password: testpassword
+    url: jdbc:postgresql://0.0.0.0:5432/mydb
+    username: myuser
+    password: mypassword
   devtools:
     restart:
       quiet-period: 1s
