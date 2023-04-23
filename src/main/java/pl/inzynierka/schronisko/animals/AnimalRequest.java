@@ -2,6 +2,7 @@ package pl.inzynierka.schronisko.animals;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -24,11 +25,11 @@ public class AnimalRequest {
             example = "kot"
     )
     private String type;
-    @NotNull
     @Schema(
             description = "Race of animal",
             example = "Brytyjczyk"
     )
+    @Nullable
     private String race;
     @NotNull
     @Size(
