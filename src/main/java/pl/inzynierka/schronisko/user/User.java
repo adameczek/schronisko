@@ -27,32 +27,71 @@ import java.util.List;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Schema(description = "Unique identifier of the contact.", example = "1")
+    @Schema(
+            description = "Unique identifier of the contact.",
+            example = "1"
+    )
     private long id;
-    @Column(unique = true, nullable = true)
-    @Size(min = 1, max = 50)
-    @Schema(description = "Username of user.", example = "Pawulonik21")
+    @Column(
+            unique = true,
+            nullable = true
+    )
+    @Size(
+            min = 1,
+            max = 50
+    )
+    @Schema(
+            description = "Username of user.",
+            example = "Pawulonik21"
+    )
     private String username;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotBlank
     @Column(nullable = false)
     @ValidPassword
-    @Schema(description = "password of user", example = "P@$$w0rd")
+    @Schema(
+            description = "password of user",
+            example = "P@$$w0rd"
+    )
     private String password;
     @NotBlank
-    @Size(min = 1, max = 100)
+    @Size(
+            min = 1,
+            max = 100
+    )
     @Email(message = "Email is not valid")
-    @Schema(description = "Email of user", example = "robert@kubica.pl")
-    @Column(unique = true, nullable = false)
+    @Schema(
+            description = "Email of user",
+            example = "robert@kubica.pl"
+    )
+    @Column(
+            unique = true,
+            nullable = false
+    )
     private String email;
-    @Size(min = 1, max = 100)
-    @Schema(description = "user firstname", example = "Mieczyslaw")
+    @Size(
+            min = 1,
+            max = 100
+    )
+    @Schema(
+            description = "user firstname",
+            example = "Mieczyslaw"
+    )
     private String firstname;
-    @Size(min = 1, max = 100)
-    @Schema(description = "user lastname", example = "Chrabonszczak")
+    @Size(
+            min = 1,
+            max = 100
+    )
+    @Schema(
+            description = "user lastname",
+            example = "Chrabonszczak"
+    )
     private String lastname;
     @CreatedDate
-    @Column(updatable = false, nullable = false)
+    @Column(
+            updatable = false,
+            nullable = false
+    )
     @Schema(description = "Date of account creation")
     private LocalDateTime joined;
     @LastModifiedDate
@@ -66,16 +105,15 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private Shelter shelter;
-
+    
     public boolean hasRoles(Role... roles) {
         return Arrays.stream(roles).allMatch(role -> getRoles().contains(role));
     }
-
+    
     public boolean hasNoRoles(Role... roles) {
-        return Arrays.stream(roles)
-                .noneMatch(role -> getRoles().contains(role));
+        return Arrays.stream(roles).noneMatch(role -> getRoles().contains(role));
     }
-
+    
     public boolean hasAnyRole(Role... roles) {
         return Arrays.stream(roles).anyMatch(role -> getRoles().contains(role));
     }

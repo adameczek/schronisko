@@ -1,0 +1,738 @@
+{
+	"info": {
+		"_postman_id": "a4a41abb-f2f5-4fc7-8b37-43d444f3c37a",
+		"name": "schronisko",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "11918993",
+		"_collection_link": "https://schronisko.postman.co/workspace/Schronisko~c3c54d2b-f826-49ea-8a3d-6877d81d591f/collection/11918993-a4a41abb-f2f5-4fc7-8b37-43d444f3c37a?action=share&creator=11918993&source=collection_link"
+	},
+	"item": [
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "create user",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"adam1sawicki@gmail.com\",\r\n    \"password\": \"Dupk@123\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get users",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/users",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get logged in user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/users/me",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get user",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/users/:username",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users",
+								":username"
+							],
+							"variable": [
+								{
+									"key": "username",
+									"value": "adamoss"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit user",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"\",\r\n    \"firstname\": \"\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/users?email=adam3sawicki@gmail.com",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "email",
+									"value": "adam3sawicki@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "animals",
+			"item": [
+				{
+					"name": "tags",
+					"item": [
+						{
+							"name": "create tag",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"value\": \"slodki\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/animals/tags",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"animals",
+										"tags"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get tags",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/animals/tags",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"animals",
+										"tags"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "types",
+					"item": [
+						{
+							"name": "create type",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"value\": \"kot\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{host}}/animals/types",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"animals",
+										"types"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "add race to type",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/animals/types/kot/bengalski",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"animals",
+										"types",
+										"kot",
+										"bengalski"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get types",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/animals/types",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"animals",
+										"types"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "remove race from type",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{host}}/animals/types/kot/bengalski",
+									"host": [
+										"{{host}}"
+									],
+									"path": [
+										"animals",
+										"types",
+										"kot",
+										"bengalski"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "get animals",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/animals",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"animals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create animal",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"kiciula2\",\r\n    \"description\": \"Slodziutki piesio\",\r\n    \"type\": \"kot\",\r\n    \"shelter\": \"schronicho\",\r\n    \"weight\": 2.1\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/animals",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"animals"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "edit animal",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"azowwwrek\",\r\n    \"description\": null,\r\n    \"weight\": 3.0,\r\n    \"race\": \"brytyjczyk\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/animals/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"animals",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "203"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "sort by",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"types\": [\"pies\", \"kot\"],\r\n    \"tags\": [\"chiory\"],\r\n    \"sortBy\": \"+name\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/animals/search",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"animals",
+								"search"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Shelter",
+			"item": [
+				{
+					"name": "create shelter",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"schronicho\",\r\n    \"address\": {\r\n        \"postCode\": \"62-020\",\r\n        \"city\": \"Warszawa\",\r\n        \"voivodeship\": \"Wielkopolska\",\r\n        \"street\": \"główna\",\r\n        \"houseNumber\": \"12a\"\r\n    },\r\n    \"ownerEmail\": \"adam1sawicki@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/shelters",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"shelters"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get shelters",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/shelters?page=0",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"shelters"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add employee",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    \"adam1sawicki@gmail.com\"\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/shelters/:name/employees",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"shelters",
+								":name",
+								"employees"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "schronicho"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove employee",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    \"adam1sawicki@gmail.com\"\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/shelters/:name/employees/:email",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"shelters",
+								":name",
+								"employees",
+								":email"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "schronicho"
+								},
+								{
+									"key": "email",
+									"value": "adam2sawicki@gmail.com"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add animal",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    2\r\n]",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/shelters/:name/animals",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"shelters",
+								":name",
+								"animals"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "schronicho"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Remove animal",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/shelters/:name/animals/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"shelters",
+								":name",
+								"animals",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "schronicho"
+								},
+								{
+									"key": "id",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get shelter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/shelters/:name",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"shelters",
+								":name"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "schronicho"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update shelter",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"aaa\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/shelters/:name",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"shelters",
+								":name"
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "schronicho"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Token exists\", function () {\r",
+							"    pm.expect(jsonData.token).to.not.eq(undefined)\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"token\", jsonData.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"adam1sawicki@gmail.com\",\r\n    \"password\": \"Dupk@123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{host}}/login",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "api docs",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{host}}/api-docs",
+					"host": [
+						"{{host}}"
+					],
+					"path": [
+						"api-docs"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "host",
+			"value": "0.0.0.0:25000",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

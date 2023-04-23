@@ -18,23 +18,32 @@ import java.util.List;
 @Builder
 @Setter
 public class Shelter {
+    @LastModifiedDate
+    LocalDateTime updatedAt;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    @Column(unique = true, nullable = false)
+    @Column(
+            unique = true,
+            nullable = false
+    )
     private String name;
-    @LastModifiedDate
-    LocalDateTime updatedAt;
     @OneToOne
     private User owner;
     @OneToMany(fetch = FetchType.LAZY)
     private List<User> employees;
-    @Size(min = 0, max = 5000)
+    @Size(
+            min = 0,
+            max = 5000
+    )
     private String description;
     @OneToMany(fetch = FetchType.LAZY)
     private List<Animal> animals;
     @OneToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(unique = true, nullable = false)
+    @JoinColumn(
+            unique = true,
+            nullable = false
+    )
     @JsonMerge
     private Address address;
 }

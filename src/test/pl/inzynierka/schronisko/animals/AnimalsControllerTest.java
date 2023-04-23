@@ -40,65 +40,61 @@ public class AnimalsControllerTest {
     JsonRequestBodyLoader loader;
     String moderatorToken;
     String userToken;
-
+    
     @Autowired
     UserService userService;
     @Autowired
     AuthenticationService authenticationService;
-
+    
     @BeforeAll
-    void setUp(WebApplicationContext applicationContext) throws
-            UserServiceException {
+    void setUp(WebApplicationContext applicationContext) throws UserServiceException {
         SetUp.UserSetup.initUsersInDb(userService);
-        moderatorToken = TestUtils.loginAndGetToken(authenticationService,
-                                                    "moderator@email.com");
-        userToken = TestUtils.loginAndGetToken(authenticationService,
-                                               "userek@email.com");
+        moderatorToken = TestUtils.loginAndGetToken(authenticationService, "moderator@email.com");
+        userToken = TestUtils.loginAndGetToken(authenticationService, "userek@email.com");
         dbInitializer.initDB();
     }
-
+    
     @Test
     @Order(1)
     void createAnimal() throws IOException {
-        String requestBody = loader.getRequestFromFile("default",
-                                                       "animalRequests");
-
+        String requestBody = loader.getRequestFromFile("default", "animalRequests");
+        
         client.post()
-                .uri(uriBuilder -> uriBuilder.path("/animals").build())
-                .headers(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_JSON))
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(moderatorToken))
-                .body(Mono.just(requestBody), String.class)
-                .exchange()
-                .expectStatus().is2xxSuccessful()
-                .expectBody()
-                .jsonPath("$.name")
-                .isEqualTo("Mruczuś")
-                .jsonPath("$.tags[0].value")
-                .value(s -> {
-                    assertTrue(List.of("rudy", "ruchliwy").contains(s));
-                }, String.class)
-                .jsonPath("$.createdBy.email")
-                .isEqualTo("moderator@email.com");
+              .uri(uriBuilder -> uriBuilder.path("/animals").build())
+              .headers(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_JSON))
+              .headers(httpHeaders -> httpHeaders.setBearerAuth(moderatorToken))
+              .body(Mono.just(requestBody), String.class)
+              .exchange()
+              .expectStatus()
+              .is2xxSuccessful()
+              .expectBody()
+              .jsonPath("$.name")
+              .isEqualTo("Mruczuś")
+              .jsonPath("$.tags[0].value")
+              .value(s -> {
+                  assertTrue(List.of("rudy", "ruchliwy").contains(s));
+              }, String.class)
+              .jsonPath("$.createdBy.email")
+              .isEqualTo("moderator@email.com");
     }
-
+    
     @Test
     @Order(2)
     void createAnimalNonExistingTag() throws IOException {
-        String requestBody = loader.getRequestFromFile("withNotExistingTag",
-                                                       "animalRequests");
-
+        String requestBody = loader.getRequestFromFile("withNotExistingTag", "animalRequests");
+        
         client.post()
-                .uri(uriBuilder -> uriBuilder.path("/animals").build())
-                .headers(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_JSON))
-                .headers(httpHeaders -> httpHeaders.setBearerAuth(moderatorToken))
-                .body(Mono.just(requestBody), String.class)
-                .exchange()
-                .expectStatus()
-                .is4xxClientError()
-                .expectBody()
-                .jsonPath("$.error")
-                .exists();
+              .uri(uriBuilder -> uriBuilder.path("/animals").build())
+              .headers(httpHeaders -> httpHeaders.setContentType(MediaType.APPLICATION_JSON))
+              .headers(httpHeaders -> httpHeaders.setBearerAuth(moderatorToken))
+              .body(Mono.just(requestBody), String.class)
+              .exchange()
+              .expectStatus()
+              .is4xxClientError()
+              .expectBody()
+              .jsonPath("$.error")
+              .exists();
     }
-
-
+    
+    
 }

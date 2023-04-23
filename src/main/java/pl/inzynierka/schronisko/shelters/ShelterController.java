@@ -33,25 +33,28 @@ import java.util.List;
 @RestController
 @Slf4j
 @RequestMapping("/shelters")
-@Tag(name = "shelters", description = "Provides shelter data")
+@Tag(
+        name = "shelters",
+        description = "Provides shelter data"
+)
 public class ShelterController {
     private final ShelterService shelterService;
     private final ModelMapper modelMapper;
-
+    
     @GetMapping
     @PreAuthorize("hasAuthority('USER')")
     @Operation(
-            summary = "Get shelters", description = "Gets list of shelters"
+            summary = "Get shelters",
+            description = "Gets list of shelters"
     )
     ResponseEntity<Page<ShelterResponse>> getShelters(Pageable pageable) {
-        return ResponseEntity.ok(shelterService.getShelters(pageable)
-                                         .map(this::convertToResponse));
+        return ResponseEntity.ok(shelterService.getShelters(pageable).map(this::convertToResponse));
     }
-
+    
     private ShelterResponse convertToResponse(Shelter shelter) {
         return modelMapper.map(shelter, ShelterResponse.class);
     }
-
+    
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
@@ -66,15 +69,15 @@ public class ShelterController {
                             mediaType = "application/json",
                             schema = @Schema(implementation = ShelterResponse.class)
                     )}
-            )
-            }
+            )}
     )
-    ResponseEntity<ShelterResponse> createShelter(@Valid @RequestBody
-                                                  ShelterRequest request) {
-        return ResponseEntity.ok(convertToResponse(shelterService.createShelter(
-                request)));
+    ResponseEntity<ShelterResponse> createShelter(
+            @Valid
+            @RequestBody
+            ShelterRequest request) {
+        return ResponseEntity.ok(convertToResponse(shelterService.createShelter(request)));
     }
-
+    
     @GetMapping("/{name}")
     @PreAuthorize("hasAuthority('USER')")
     @Operation(
@@ -83,42 +86,45 @@ public class ShelterController {
     )
     ResponseEntity<ShelterResponse> getShelterByName(
             @PathVariable String name) {
-        return shelterService.getShelter(name).map(this::convertToResponse).map(
-                ResponseEntity::ok).orElse(ResponseEntity.badRequest().build());
+        return shelterService.getShelter(name).map(this::convertToResponse).map(ResponseEntity::ok).orElse(
+                ResponseEntity.badRequest().build());
     }
-
+    
     @PutMapping("/{name}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
             summary = "Update Shelter",
             description = "Updates shelter with given data"
     )
-    ResponseEntity<ShelterResponse> updateShelter(@RequestBody JsonNode request,
-                                                  @PathVariable String name) {
-        return ResponseEntity.ok(convertToResponse(shelterService.updateShelter(
-                request,
-                name)));
+    ResponseEntity<ShelterResponse> updateShelter(
+            @RequestBody JsonNode request,
+            @PathVariable String name) {
+        return ResponseEntity.ok(convertToResponse(shelterService.updateShelter(request, name)));
     }
-
+    
     @DeleteMapping("/{name}")
     @PreAuthorize("hasAuthority('ADMIN')")
     @Operation(
-            summary = "Delete shelter", description = "Deletes shelter by name"
+            summary = "Delete shelter",
+            description = "Deletes shelter by name"
     )
-    ResponseEntity<SimpleResponse> deleteShelter(@PathVariable String name) {
+    ResponseEntity<SimpleResponse> deleteShelter(
+            @PathVariable String name) {
         return ResponseEntity.ok(shelterService.deleteShelter(name));
     }
-
+    
     @PostMapping("/{name}/employees")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SHELTER_OWNER')")
     @Operation(
-            summary = "Add employees", description = "Adds employees to shelter"
+            summary = "Add employees",
+            description = "Adds employees to shelter"
     )
     ResponseEntity<SimpleResponse> addEmployeeToShelter(
-            @PathVariable String name, @RequestBody List<String> userEmails) {
+            @PathVariable String name,
+            @RequestBody List<String> userEmails) {
         return ResponseEntity.ok(shelterService.addEmployee(name, userEmails));
     }
-
+    
     @DeleteMapping("/{name}/employees/{email}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SHELTER_OWNER')")
     @Operation(
@@ -126,40 +132,38 @@ public class ShelterController {
             description = "Removes employee with given email from shelter"
     )
     ResponseEntity<SimpleResponse> removeEmployeeFromShelter(
-            @PathVariable String name, @PathVariable String email) {
+            @PathVariable String name,
+            @PathVariable String email) {
         User authenticatedUser = AuthenticationUtils.getAuthenticatedUser();
-
-        if (authenticatedUser.hasAnyRole(Role.ADMIN) || authenticatedUser.getShelter()
-                .getName()
-                .equals(name)) {
-            return ResponseEntity.ok(shelterService.removeEmployeeFromShelter(
-                    name,
-                    email));
+        
+        if (authenticatedUser.hasAnyRole(Role.ADMIN) || authenticatedUser.getShelter().getName().equals(name)) {
+            return ResponseEntity.ok(shelterService.removeEmployeeFromShelter(name, email));
         } else {
             return ResponseEntity.badRequest().body(new SimpleResponse(false,
-                                                                       "Nie masz uprawnień do usunięcia pracownika z tego schroniska."));
+                                                                       "Nie masz uprawnień do usunięcia "
+                                                                       + "pracownika z tego schroniska."));
         }
     }
-
+    
     @PostMapping("/{name}/animals")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATOR')")
     @Operation(
             summary = "Add animal to shelter",
             description = "Removes animal from shelter"
     )
-    ResponseEntity<SimpleResponse> addAnimalToShelter(@PathVariable String name,
-                                                      @RequestBody
-                                                      @NotNull List<Integer> id) {
+    ResponseEntity<SimpleResponse> addAnimalToShelter(
+            @PathVariable String name,
+            @RequestBody
+            @NotNull List<Integer> id) {
         User requester = AuthenticationUtils.getAuthenticatedUser();
-
-        if (requester.hasNoRoles(Role.ADMIN) && !requester.getShelter()
-                .getName()
-                .equals(name)) throw new ShelterServiceException(
-                "Użytkownik nie jest uprawniony do dodawania zwierząt do schroniska: " + name);
-
+        
+        if (requester.hasNoRoles(Role.ADMIN) && !requester.getShelter().getName().equals(name))
+            throw new ShelterServiceException(
+                    "Użytkownik nie jest uprawniony do dodawania zwierząt do schroniska: " + name);
+        
         return ResponseEntity.ok(shelterService.addAnimal(name, id));
     }
-
+    
     @DeleteMapping("/{name}/animals/{id}")
     @PreAuthorize("hasAnyAuthority('ADMIN', 'MODERATOR')")
     @Operation(
@@ -167,26 +171,22 @@ public class ShelterController {
             description = "Removes animal from shelter"
     )
     ResponseEntity<SimpleResponse> removeAnimalFromShelter(
-            @PathVariable String name, @PathVariable String id) {
+            @PathVariable String name,
+            @PathVariable String id) {
         User requester = AuthenticationUtils.getAuthenticatedUser();
-        if (requester.hasNoRoles(Role.ADMIN) && !requester.getShelter()
-                .getName()
-                .equals(name)) throw new ShelterServiceException(
-                "Użytkownik nie jest uprawniony do dodawania zwierząt do schroniska: " + name);
-
-        return ResponseEntity.ok(shelterService.removeAnimal(name,
-                                                             Integer.parseInt(id)));
+        if (requester.hasNoRoles(Role.ADMIN) && !requester.getShelter().getName().equals(name))
+            throw new ShelterServiceException(
+                    "Użytkownik nie jest uprawniony do dodawania zwierząt do schroniska: " + name);
+        
+        return ResponseEntity.ok(shelterService.removeAnimal(name, Integer.parseInt(id)));
     }
-
+    
     @ExceptionHandler({ShelterServiceException.class})
-    ResponseEntity<ErrorResponse> shelterServiceException(Exception e,
-                                                          WebRequest request) {
-        log.error(
-                "Shelter service exception occured for request!\nDetails: {}, request details: {}",
-                e.getMessage(),
-                request.getDescription(true));
-
-        return ResponseEntity.badRequest()
-                .body(ErrorResponse.now(e.getMessage()));
+    ResponseEntity<ErrorResponse> shelterServiceException(Exception e, WebRequest request) {
+        log.error("Shelter service exception occured for request!\nDetails: {}, request details: {}",
+                  e.getMessage(),
+                  request.getDescription(true));
+        
+        return ResponseEntity.badRequest().body(ErrorResponse.now(e.getMessage()));
     }
 }

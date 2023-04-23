@@ -8,8 +8,6 @@ import java.util.List;
 public class TagListConverter extends AbstractConverter<List<AnimalTag>, List<String>> {
     @Override
     protected List<String> convert(List<AnimalTag> tags) {
-        return tags.stream()
-                .map(AnimalTag::getValue)
-                .toList();
+        return tags.stream().map(AnimalTag::getValue).toList();
     }
 }

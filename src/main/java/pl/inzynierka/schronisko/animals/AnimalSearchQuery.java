@@ -27,7 +27,8 @@ public class AnimalSearchQuery {
     )
     private String createdBy;
     @Schema(
-            description = "by which field it should be sorted, default it sorts by create date ascending. You start with '+' or '-', and then type name of field.",
+            description = "by which field it should be sorted, default it sorts by create date ascending. You "
+                          + "start with '+' or '-', and then type name of field.",
             example = "+type"
     )
     private String sortBy;

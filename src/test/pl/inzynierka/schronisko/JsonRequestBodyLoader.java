@@ -12,15 +12,13 @@ import java.io.IOException;
 @RequiredArgsConstructor
 @Component
 public class JsonRequestBodyLoader {
-    public String getRequestFromFile(String key, String fileName) throws
-            IOException {
+    public String getRequestFromFile(String key, String fileName) throws IOException {
         var ob = new ObjectMapper();
-        File resource =
-                new ClassPathResource("requests/" + fileName + ".json").getFile();
-
+        File resource = new ClassPathResource("requests/" + fileName + ".json").getFile();
+        
         JsonNode node = ob.readValue(resource, JsonNode.class);
-
+        
         return node.get(key).toString();
     }
-
+    
 }
