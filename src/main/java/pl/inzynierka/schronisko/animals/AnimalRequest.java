@@ -31,6 +31,8 @@ public class AnimalRequest {
     )
     @Nullable
     private String race;
+    @Nullable
+    private Double weight;
     @NotNull
     @Size(
             min = 1,
