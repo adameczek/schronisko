@@ -62,9 +62,8 @@ public class AnimalService {
         } catch (BeansException e) {
             e.printStackTrace();
             throw new AnimalServiceException("Wystąpił błąd podczas aktualizowania zwierzaka!");
-        } catch (MappingException e) {
-            e.printStackTrace();
-            throw new AnimalServiceException(e.getMessage());
+        } catch (org.modelmapper.MappingException e) {
+            throw new AnimalServiceException(e.getCause().getMessage());
         }
     }
     

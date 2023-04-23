@@ -60,11 +60,23 @@ public class AnimalMapper {
         typeMap.addMappings(ex -> ex.using(stringAnimalTypeConverter())
                                     .map(AnimalRequest::getType, Animal::setType));
         typeMap.addMappings(ex -> ex.using(listToAnimalTagList()).map(AnimalRequest::getTags, Animal::setTags));
-        
+        typeMap.addMappings(ex -> ex.when(raceExists()).map(AnimalRequest::getRace, Animal::setRace));
         
         mapper.map(animalRequest, existingAnimal);
         
         return existingAnimal;
+    }
+    
+    public Animal mapToAnimal(AnimalRequest animalRequest) throws MappingException {
+        ModelMapper mapper = new ModelMapper();
+        TypeMap<AnimalRequest, Animal> typeMap = mapper.createTypeMap(AnimalRequest.class, Animal.class);
+        typeMap.addMappings(ex -> ex.using(stringAnimalTypeConverter())
+                                    .map(AnimalRequest::getType, Animal::setType));
+        typeMap.addMappings(ex -> ex.when(raceExists()).map(AnimalRequest::getRace, Animal::setRace));
+        typeMap.addMappings(ex -> ex.using(listToAnimalTagList()).map(AnimalRequest::getTags, Animal::setTags));
+        
+        
+        return mapper.map(animalRequest, Animal.class);
     }
     
     Converter<AnimalType, String> animalTypeStringConverter() {
@@ -99,14 +111,15 @@ public class AnimalMapper {
                 return false;
             
             var destination = (Animal) c.getParent().getDestination();
-            AnimalType animalType = null;
+            var source = (AnimalRequest) c.getParent().getSource();
             
-            if (destination != null && destination.getType() != null) {
-                animalType = destination.getType();
-            } else {
+            AnimalType animalType = null;
+            if (source.getType() != null) {
                 animalType = animalTypeService.findByValue(((AnimalRequest) c.getParent().getSource()).getType())
                                               .orElseThrow(() -> new MappingException(
-                                                      "Nie można ustalić rasy bez podanego typu zwierzęcia"));
+                                                      "Nie można ustalić rasy bez podanego typu " + "zwierzęcia"));
+            } else if (destination.getType() != null) {
+                animalType = destination.getType();
             }
             
             var result = animalType.getRaces().contains(c.getSource());
@@ -118,15 +131,5 @@ public class AnimalMapper {
         };
     }
     
-    public Animal mapToAnimal(AnimalRequest animalRequest) throws MappingException {
-        ModelMapper mapper = new ModelMapper();
-        TypeMap<AnimalRequest, Animal> typeMap = mapper.createTypeMap(AnimalRequest.class, Animal.class);
-        typeMap.addMappings(ex -> ex.using(stringAnimalTypeConverter())
-                                    .map(AnimalRequest::getType, Animal::setType));
-        typeMap.addMappings(ex -> ex.when(raceExists()).map(AnimalRequest::getRace, Animal::setRace));
-        typeMap.addMappings(ex -> ex.using(listToAnimalTagList()).map(AnimalRequest::getTags, Animal::setTags));
-        
-        
-        return mapper.map(animalRequest, Animal.class);
-    }
+    
 }

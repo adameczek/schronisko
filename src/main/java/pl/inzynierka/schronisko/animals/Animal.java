@@ -30,10 +30,6 @@ public class Animal {
     @Schema(description = "List of animal tags to help with searching")
     private List<AnimalTag> tags;
     @Nullable
-    @Size(
-            min = 0,
-            max = 100
-    )
     private Double weight;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

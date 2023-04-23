@@ -61,7 +61,7 @@ public class AnimalTypeService {
             
             return new SimpleResponse(true, null);
         } else {
-            throw new AnimalTypeServiceException("Dana rasa już istnieje dla: " + animalType);
+            return new SimpleResponse(false, "Dana rasa już istnieje dla: " + animalType);
         }
     }
     
@@ -81,7 +81,7 @@ public class AnimalTypeService {
             
             return new SimpleResponse(true, String.format("Usunięto rasę: %s z %s", race, type));
         } else {
-            throw new AnimalTypeServiceException("Nie odnaleziono danej rasy w tej kategorii zwierząt!");
+            return new SimpleResponse(false, "Nie odnaleziono danej rasy w tej kategorii zwierząt!");
         }
     }
 }

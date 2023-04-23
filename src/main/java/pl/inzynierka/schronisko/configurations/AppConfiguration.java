@@ -23,8 +23,8 @@ public class AppConfiguration {
         typeMap.addMappings(mapper -> mapper.map(src -> src.getType().getValue(), AnimalResponse::setType));
         typeMap.addMappings(mapper -> mapper.using(new TagListConverter())
                                             .map(Animal::getTags, AnimalResponse::setTags));
-        typeMap.addMappings(mapper -> mapper.when(mappingContext -> ((Animal) mappingContext.getSource()).getRace()
+        typeMap.addMappings(mapper -> mapper.when(mappingContext -> ((Animal) mappingContext.getParent().getSource()).getRace()
                                                                     != null)
-                                            .map(src -> src.getRace().getValue(), AnimalResponse::setRace));
+                                            .map(Animal::getRace, AnimalResponse::setRace));
     }
 }
