@@ -9,6 +9,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import pl.inzynierka.schronisko.fileupload.ImageFileDTO;
 import pl.inzynierka.schronisko.shelters.models.Shelter;
 import pl.inzynierka.schronisko.user.validators.ValidPassword;
 
@@ -105,6 +106,8 @@ public class User {
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
     private Shelter shelter;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<ImageFileDTO> images = Arrays.asList(new ImageFileDTO[5]);
     
     public boolean hasRoles(Role... roles) {
         return Arrays.stream(roles).allMatch(role -> getRoles().contains(role));
