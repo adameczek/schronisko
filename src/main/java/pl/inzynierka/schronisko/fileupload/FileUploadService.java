@@ -10,7 +10,9 @@ import pl.inzynierka.schronisko.user.User;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -32,11 +34,11 @@ public class FileUploadService {
         
         Map<ResolutionEnum, byte[]> imageMap = new HashMap<>();
         
-        for (ResolutionEnum  resolution : ResolutionEnum.values()) {
+        for (ResolutionEnum resolution : ResolutionEnum.values()) {
             byte[] imageBytes;
             try {
                 if (resolution.equals(croppedImage.resolution())) {
-                     imageBytes = ImageTools.bufferedImageToByteArray(croppedImage.image(), "jpg");
+                    imageBytes = ImageTools.bufferedImageToByteArray(croppedImage.image(), "jpg");
                 } else {
                     CroppedImage resized = ImageTools.resize(croppedImage.image(), resolution);
                     imageBytes = ImageTools.bufferedImageToByteArray(resized.image(), "jpg");
@@ -54,5 +56,13 @@ public class FileUploadService {
     
     public Optional<ImageFileDTO> getImage(long id) {
         return imageFileRepository.findById(id);
+    }
+    
+    public InputStream getImageByIdAndResolution(long id, ResolutionEnum resolutionEnum) {
+        ImageFileDTO imageFileDTO = imageFileRepository.findById(id)
+                                                       .orElseThrow(() -> new FileUploadServiceException(String.format("File with id: %d not found!",
+                                                                                                                       id)));
+        
+        return new ByteArrayInputStream(imageFileDTO.getImageByEnum(resolutionEnum));
     }
 }

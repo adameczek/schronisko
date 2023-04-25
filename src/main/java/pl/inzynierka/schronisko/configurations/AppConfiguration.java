@@ -4,27 +4,23 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeMap;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import pl.inzynierka.schronisko.animals.Animal;
 import pl.inzynierka.schronisko.animals.AnimalResponse;
 import pl.inzynierka.schronisko.configurations.converters.TagListConverter;
-import pl.inzynierka.schronisko.fileupload.ImageFileDTO;
-import pl.inzynierka.schronisko.fileupload.ImageFileResponse;
-import pl.inzynierka.schronisko.imagescaler.ResolutionEnum;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Configuration
 public class AppConfiguration {
     @Bean
-    public ModelMapper modelMapper() {
+    public ModelMapper modelMapper(Environment environment) {
         var modelmapper = new ModelMapper();
-        setAnimalToAnimalResponseMapping(modelmapper);
+        setAnimalToAnimalResponseMapping(modelmapper, environment);
         return modelmapper;
     }
     
-    private void setAnimalToAnimalResponseMapping(ModelMapper modelMapper) {
+    private void setAnimalToAnimalResponseMapping(ModelMapper modelMapper, Environment environment) {
         TypeMap<Animal, AnimalResponse> typeMap = modelMapper.createTypeMap(Animal.class, AnimalResponse.class);
+        final String baseUrl = environment.getProperty("settings.url");
         
         typeMap.addMappings(mapper -> mapper.map(src -> src.getType().getValue(), AnimalResponse::setType));
         typeMap.addMappings(mapper -> mapper.using(new TagListConverter())
@@ -33,31 +29,6 @@ public class AppConfiguration {
                                                                                             .getSource()).getRace()
                                                                     != null)
                                             .map(Animal::getRace, AnimalResponse::setRace));
-    }
-    
-    private void setImageToImageResponseMapping(ModelMapper modelMapper) {
-        TypeMap<ImageFileDTO, ImageFileResponse> typeMap = modelMapper.createTypeMap(
-                ImageFileDTO.class,
-                ImageFileResponse.class);
-        
-        typeMap.addMapping(imageFileDTO -> {
-            final Map<String, String> imageMap = new HashMap<>();
-            for (ResolutionEnum resolutionEnum : ResolutionEnum.values()) {
-                byte[] imageBytes;
-                switch (resolutionEnum) {
-                    case HIGH -> {
-                        imageBytes = imageFileDTO.getBytes();
-                    }
-                    case MEDIUM -> {
-                        imageBytes = imageFileDTO.getMediumBytes();
-                    }
-                    case MINI -> {
-                        imageBytes = imageFileDTO.getMiniBytes();
-                    }
-                }
-                imageMap.put()
-            }
-            
-        })
+        typeMap.addMappings(mapper -> mapper.using(new ImageListConverter(baseUrl)).map(Animal::getImages, AnimalResponse::setImages));
     }
 }

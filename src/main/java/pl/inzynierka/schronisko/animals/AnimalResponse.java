@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.inzynierka.schronisko.fileupload.ImageFileResponse;
 import pl.inzynierka.schronisko.user.UserResponse;
 
 import java.util.List;
@@ -49,5 +50,6 @@ public class AnimalResponse {
             example = "2023-03-23T19:45:00.659014900"
     )
     private String updated;
+    private List<ImageFileResponse> images;
     
 }

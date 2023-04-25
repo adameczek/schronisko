@@ -63,5 +63,23 @@ public class ImageFileDTO extends FileDTO {
             }
         });
         
+        return imageFileDTO;
+    }
+    
+    public byte[] getImageByEnum(ResolutionEnum resolutionEnum) {
+        byte[] image = new byte[0];
+        switch (resolutionEnum) {
+            case HIGH -> {
+                image = getBytes();
+            }
+            case MEDIUM -> {
+                image = getMediumBytes();
+            }
+            case MINI -> {
+                image = getMiniBytes();
+            }
+        };
+        
+        return image;
     }
 }

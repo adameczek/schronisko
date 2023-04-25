@@ -11,6 +11,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import pl.inzynierka.schronisko.animals.tags.AnimalTag;
 import pl.inzynierka.schronisko.animals.types.AnimalType;
 import pl.inzynierka.schronisko.configurations.validationscopes.RepositorySave;
+import pl.inzynierka.schronisko.fileupload.ImageFileDTO;
 import pl.inzynierka.schronisko.shelters.models.Shelter;
 import pl.inzynierka.schronisko.user.User;
 
@@ -74,4 +75,6 @@ public class Animal {
     private LocalDateTime updated;
     @ManyToOne(fetch = FetchType.LAZY)
     private Shelter shelter;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<ImageFileDTO> images;
 }
