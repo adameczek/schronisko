@@ -12,8 +12,11 @@ import pl.inzynierka.schronisko.animals.tags.AnimalTagService;
 import pl.inzynierka.schronisko.animals.types.AnimalType;
 import pl.inzynierka.schronisko.animals.types.AnimalTypeService;
 import pl.inzynierka.schronisko.common.MappingException;
+import pl.inzynierka.schronisko.configurations.ImageListConverter;
+import pl.inzynierka.schronisko.fileupload.ImageFileDTO;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -49,6 +52,8 @@ public class AnimalMapper {
                                     .map(Animal::getType, AnimalRequest::setType));
         typeMap.addMappings(ex -> ex.using(animalTagListStringListConverter())
                                     .map(Animal::getTags, AnimalRequest::setTags));
+        typeMap.addMappings(ex -> ex.using(new ImageListConverter(""))
+                                    .map(Animal::getImages, AnimalRequest::setImages));
         
         return mapper.map(animalToMap, AnimalRequest.class);
     }
@@ -61,11 +66,24 @@ public class AnimalMapper {
                                     .map(AnimalRequest::getType, Animal::setType));
         typeMap.addMappings(ex -> ex.using(listToAnimalTagList()).map(AnimalRequest::getTags, Animal::setTags));
         typeMap.addMappings(ex -> ex.when(raceExists()).map(AnimalRequest::getRace, Animal::setRace));
+        typeMap.addMappings(ex -> ex.using(listIdsToFileList()).map(AnimalRequest::getImages, Animal::setImages));
         
         mapper.map(animalRequest, existingAnimal);
         
         return existingAnimal;
     }
+    
+    private Converter<List<Long>, List<ImageFileDTO>> listIdsToFileList() {
+        return c -> {
+            if (c.getSource() == null || c.getSource().size() == 0)
+                return Collections.emptyList();
+            return new ArrayList<>(c.getSource()
+                                    .stream()
+                                    .map(id -> new ImageFileDTO(id, null, null, null, null, null))
+                                    .toList());
+        };
+    }
+    
     
     public Animal mapToAnimal(AnimalRequest animalRequest) throws MappingException {
         ModelMapper mapper = new ModelMapper();
@@ -74,7 +92,7 @@ public class AnimalMapper {
                                     .map(AnimalRequest::getType, Animal::setType));
         typeMap.addMappings(ex -> ex.when(raceExists()).map(AnimalRequest::getRace, Animal::setRace));
         typeMap.addMappings(ex -> ex.using(listToAnimalTagList()).map(AnimalRequest::getTags, Animal::setTags));
-        
+        typeMap.addMappings(ex -> ex.using(listIdsToFileList()).map(AnimalRequest::getImages, Animal::setImages));
         
         return mapper.map(animalRequest, Animal.class);
     }
@@ -84,7 +102,11 @@ public class AnimalMapper {
     }
     
     Converter<List<AnimalTag>, List<String>> animalTagListStringListConverter() {
-        return c -> c.getSource().stream().map(AnimalTag::getValue).collect(Collectors.toList());
+        return c -> Optional.ofNullable(c.getSource())
+                            .map(animalTags -> animalTags.stream()
+                                                         .map(AnimalTag::getValue)
+                                                         .collect(Collectors.toList()))
+                            .orElse(Collections.emptyList());
     }
     
     private Converter<String, AnimalType> stringAnimalTypeConverter() {
@@ -93,16 +115,17 @@ public class AnimalMapper {
     }
     
     private Converter<List<String>, List<AnimalTag>> listToAnimalTagList() {
-        return c -> Optional.ofNullable(c.getSource()).map(strings -> strings.stream()
-                                                                             .map(s -> animalTagService.findByValue(
-                                                                                                               s)
-                                                                                                       .orElseThrow(
-                                                                                                               () -> new MappingException(
-                                                                                                                       "Nie znaleziono podanego tagu: "
-                                                                                                                       + s)))
-                                                                             .collect(Collectors.toList())).orElse(
-                Collections.emptyList());
-        
+        return c -> {
+            if (c.getSource() == null || c.getSource().size() == 0)
+                return Collections.emptyList();
+            
+            return c.getSource()
+                    .stream()
+                    .map(s -> animalTagService.findByValue(s)
+                                              .orElseThrow(() -> new MappingException(
+                                                      "Nie znaleziono podanego tagu: " + s)))
+                    .collect(Collectors.toList());
+        };
     }
     
     private Condition<String, String> raceExists() {

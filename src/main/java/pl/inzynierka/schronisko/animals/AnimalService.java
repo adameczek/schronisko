@@ -63,6 +63,7 @@ public class AnimalService {
             e.printStackTrace();
             throw new AnimalServiceException("Wystąpił błąd podczas aktualizowania zwierzaka!");
         } catch (org.modelmapper.MappingException e) {
+            e.printStackTrace();
             throw new AnimalServiceException(e.getCause().getMessage());
         }
     }

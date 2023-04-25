@@ -59,5 +59,7 @@ public class AnimalRequest {
     )
     private String shelter;
     @Nullable
+    private List<Long> images;
+    @Nullable
     private Sex sex;
 }

@@ -296,7 +296,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"kiciula2\",\r\n    \"description\": \"Slodziutki piesio\",\r\n    \"type\": \"kot\",\r\n    \"shelter\": \"schronicho\",\r\n    \"weight\": 2.1\r\n}",
+							"raw": "{\r\n    \"name\": \"kiciula2\",\r\n    \"description\": \"Slodziutki piesio\",\r\n    \"type\": \"kot\",\r\n    \"shelter\": \"schronicho\",\r\n    \"weight\": 2.1,\r\n    \"sex\": \"MALE\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -322,7 +322,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"azowwwrek\",\r\n    \"description\": null,\r\n    \"weight\": 3.0,\r\n    \"race\": \"brytyjczyk\"\r\n}",
+							"raw": "{\r\n    \"name\": \"azowwwrek\",\r\n    \"description\": null,\r\n    \"weight\": 3.0,\r\n    \"race\": \"brytyjczyk\",\r\n    \"images\": [1, 2]\r\n    }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -617,6 +617,68 @@
 								{
 									"key": "name",
 									"value": "schronicho"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "images",
+			"item": [
+				{
+					"name": "upload image",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": "/home/adamsawicki/Downloads/20230417_183935_javasabr_lmc16_s23_v4_soft.jpg"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{host}}/files/upload",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"files",
+								"upload"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get image",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/files/:id/:type",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"files",
+								":id",
+								":type"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "2"
+								},
+								{
+									"key": "type",
+									"value": "MINI"
 								}
 							]
 						}
