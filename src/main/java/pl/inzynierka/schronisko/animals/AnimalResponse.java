@@ -49,5 +49,5 @@ public class AnimalResponse {
             example = "2023-03-23T19:45:00.659014900"
     )
     private String updated;
-    
+    private Sex sex;
 }

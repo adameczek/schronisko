@@ -40,6 +40,8 @@ public class Animal {
     private AnimalType type;
     @Nullable
     private String race;
+    @Nullable
+    private Sex sex;
     
     @NotNull
     @Size(

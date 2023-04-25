@@ -58,4 +58,6 @@ public class AnimalRequest {
             example = "Pieskowo"
     )
     private String shelter;
+    @Nullable
+    private Sex sex;
 }
