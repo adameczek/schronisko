@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import pl.inzynierka.schronisko.animals.types.Difficulty;
 
 import java.util.List;
 
@@ -62,4 +63,6 @@ public class AnimalRequest {
     private List<Long> images;
     @Nullable
     private Sex sex;
+    @Nullable
+    private Difficulty difficulty;
 }

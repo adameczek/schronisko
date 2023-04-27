@@ -10,6 +10,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import pl.inzynierka.schronisko.animals.tags.AnimalTag;
 import pl.inzynierka.schronisko.animals.types.AnimalType;
+import pl.inzynierka.schronisko.animals.types.Difficulty;
 import pl.inzynierka.schronisko.configurations.validationscopes.RepositorySave;
 import pl.inzynierka.schronisko.fileupload.ImageFileDTO;
 import pl.inzynierka.schronisko.shelters.models.Shelter;
@@ -79,4 +80,8 @@ public class Animal {
     private Shelter shelter;
     @OneToMany(fetch = FetchType.EAGER)
     private List<ImageFileDTO> images;
+    @Nullable
+    private String color;
+    @Nullable
+    private Difficulty difficulty;
 }

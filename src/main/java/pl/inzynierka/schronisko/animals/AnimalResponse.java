@@ -51,6 +51,7 @@ public class AnimalResponse {
     )
     private String updated;
     private List<ImageFileResponse> images;
-    
+    private String color;
     private Sex sex;
+    private String difficulty;
 }
