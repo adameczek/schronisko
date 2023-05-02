@@ -3,6 +3,8 @@ package pl.inzynierka.schronisko.animals;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -84,4 +86,9 @@ public class Animal {
     private String color;
     @Nullable
     private Difficulty difficulty;
+    @Nullable
+    @Min(0)
+    @Max(50)
+    private Integer age;
+    
 }

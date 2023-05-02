@@ -3,6 +3,8 @@ package pl.inzynierka.schronisko.animals;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -65,4 +67,8 @@ public class AnimalRequest {
     private Sex sex;
     @Nullable
     private Difficulty difficulty;
+    @Nullable
+    @Min(0)
+    @Max(50)
+    private Integer age;
 }

@@ -54,4 +54,5 @@ public class AnimalResponse {
     private String color;
     private Sex sex;
     private String difficulty;
+    private Integer age;
 }
