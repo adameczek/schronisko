@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import pl.inzynierka.schronisko.animals.types.Difficulty;
 
 import java.util.List;
 
@@ -21,6 +22,12 @@ public class AnimalSearchQuery {
     private List<String> types;
     @Schema(description = "name of searched animal")
     private String name;
+    @Schema(description = "color of animal")
+    private String color;
+    @Schema(description = "Sex of animal")
+    private Sex sex;
+    @Schema(description = "Difficulty of animal")
+    private Difficulty difficulty;
     @Schema(
             description = "Animals created by certain user, you can provide here, it searches by email",
             example = "user@email.com"

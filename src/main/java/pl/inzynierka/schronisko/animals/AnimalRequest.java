@@ -60,9 +60,21 @@ public class AnimalRequest {
     )
     private String shelter;
     @Nullable
+    @Schema(
+            description = "List of images id's",
+            example = "[1, 2, 3]"
+    )
     private List<Long> images;
     @Nullable
+    @Schema(
+            description = "Sex of animal",
+            example = "FEMALE"
+    )
     private Sex sex;
     @Nullable
+    @Schema(
+            description = "Difficulty of raising animal",
+            example = "EASY"
+    )
     private Difficulty difficulty;
 }
