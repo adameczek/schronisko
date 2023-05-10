@@ -19,4 +19,6 @@ public class ShelterResponse {
     private List<AnimalResponse> animals;
     private String description;
     private AddressResponse address;
+    private String phoneNumber;
+    private String email;
 }

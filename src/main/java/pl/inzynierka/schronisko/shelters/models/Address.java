@@ -1,6 +1,7 @@
 package pl.inzynierka.schronisko.shelters.models;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -54,4 +55,8 @@ public class Address {
             max = 100
     )
     private String houseNumber;
+    @Nullable
+    private Float latitude;
+    @Nullable
+    private Float longitude;
 }

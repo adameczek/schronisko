@@ -1,7 +1,10 @@
 package pl.inzynierka.schronisko.shelters.models;
 
 import com.fasterxml.jackson.annotation.JsonMerge;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -46,4 +49,17 @@ public class Shelter {
     )
     @JsonMerge
     private Address address;
+    @Email(message = "Email is not valid")
+    @Schema(
+            description = "Email of user",
+            example = "robert@kubica.pl"
+    )
+    @Column(
+            unique = true,
+            nullable = false
+    )
+    private String email;
+    @Size(min = 9, max = 9)
+    @Nullable
+    private String phoneNumber;
 }

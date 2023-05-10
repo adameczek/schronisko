@@ -23,6 +23,7 @@ public class AnimalRequest {
     @Schema(description = "List of animal tags to help with searching")
     private List<String> tags;
     @NotNull
+    @Max(1000)
     @Schema(
             description = "Type of animal",
             example = "kot"
@@ -71,4 +72,7 @@ public class AnimalRequest {
     @Min(0)
     @Max(50)
     private Integer age;
+    @Nullable
+    @Max(100)
+    private String color;
 }

@@ -90,5 +90,4 @@ public class Animal {
     @Min(0)
     @Max(50)
     private Integer age;
-    
 }

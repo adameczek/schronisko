@@ -1,6 +1,8 @@
 package pl.inzynierka.schronisko.shelters.models;
 
 import com.fasterxml.jackson.annotation.JsonMerge;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -29,4 +31,10 @@ public class ShelterRequest {
     private Address address;
     @NotNull
     private String ownerEmail;
+    @NotNull
+    @Email
+    private String email;
+    @Nullable
+    @Size(max = 9, min = 9)
+    private String phoneNumber;
 }

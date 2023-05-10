@@ -15,4 +15,6 @@ public class AddressResponse {
     private String voivodeship;
     private String street;
     private String houseNumber;
+    private Float longitude;
+    private Float latitude;
 }
