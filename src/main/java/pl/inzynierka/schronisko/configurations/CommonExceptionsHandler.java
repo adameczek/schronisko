@@ -4,6 +4,7 @@ import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Path;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.MappingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -87,5 +88,15 @@ public class CommonExceptionsHandler {
         log.error("Exception occurred: {} for request: {}", e.getMessage(), request.getDescription(true));
         
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ErrorResponse.now(e.getMessage()));
+    }
+    
+    @ExceptionHandler(MappingException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    ResponseEntity<ErrorResponse> onMappingException(MappingException e, WebRequest request)
+    {
+        log.error("Exception occurred: {} for request: {}", e.getMessage(), request.getDescription(true));
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(ErrorResponse.now(e.getCause().getMessage()));
     }
 }

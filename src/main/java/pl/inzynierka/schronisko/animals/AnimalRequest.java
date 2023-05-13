@@ -19,11 +19,10 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class AnimalRequest {
-    
     @Schema(description = "List of animal tags to help with searching")
     private List<String> tags;
     @NotNull
-    @Max(1000)
+    @Size(min = 1, max = 100)
     @Schema(
             description = "Type of animal",
             example = "kot"
@@ -48,7 +47,7 @@ public class AnimalRequest {
     )
     private String name;
     @Size(
-            min = 0,
+            min = 1,
             max = 1000
     )
     @Schema(
@@ -73,6 +72,6 @@ public class AnimalRequest {
     @Max(50)
     private Integer age;
     @Nullable
-    @Max(100)
+    @Size(min = 1, max = 100)
     private String color;
 }
