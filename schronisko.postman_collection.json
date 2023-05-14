@@ -296,7 +296,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"kiciula2\",\r\n    \"description\": \"Slodziutki piesio\",\r\n    \"type\": \"kot\",\r\n    \"shelter\": \"schronicho\",\r\n    \"weight\": 2.1,\r\n    \"sex\": \"MALE\"\r\n}",
+							"raw": "{\r\n    \"name\": \"kiciula2\",\r\n    \"description\": \"Slodziutki piesio\",\r\n    \"type\": \"kot\",\r\n    \"shelter\": \"schronicho\",\r\n    \"weight\": 2.1,\r\n    \"sex\": \"FEMALE\",\r\n    \"color\": \"bronzowy\",\r\n    \"difficulty\": \"EASY\",\r\n    \"race\": \"dachowiec\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -387,7 +387,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"schronicho\",\r\n    \"address\": {\r\n        \"postCode\": \"62-020\",\r\n        \"city\": \"Warszawa\",\r\n        \"voivodeship\": \"Wielkopolska\",\r\n        \"street\": \"główna\",\r\n        \"houseNumber\": \"12a\"\r\n    },\r\n    \"ownerEmail\": \"adam1sawicki@gmail.com\"\r\n}",
+							"raw": "{\r\n    \"name\": \"schronicho2\",\r\n    \"address\": {\r\n        \"postCode\": \"62-020\",\r\n        \"city\": \"Warszawa\",\r\n        \"voivodeship\": \"Wielkopolska\",\r\n        \"street\": \"główna\",\r\n        \"houseNumber\": \"12a\",\r\n        \"latitude\": 12.5,\r\n        \"longitude\": 13.2345\r\n    },\r\n    \"ownerEmail\": \"adam1sawicki@gmail.com\",\r\n    \"email\": \"schronicho@schronicho.pl\",\r\n    \"phoneNumber\": \"886460291\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -597,7 +597,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"description\": \"aaa\"\r\n}",
+							"raw": "{\r\n    \"phoneNumber\": \"886460291\",\r\n    \"email\": \"schronisko@ddd.pl\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -680,6 +680,86 @@
 									"key": "type",
 									"value": "MINI"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "news",
+			"item": [
+				{
+					"name": "create news",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"message\": \"witam witam o tej porze kazdy wypic moze\",\n    \"title\": \"Piston postrach wsi\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/news",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"news"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get last news of shelter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/news/:shelter",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"news",
+								":shelter"
+							],
+							"variable": [
+								{
+									"key": "shelter",
+									"value": "schronicho3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete news",
+					"request": {
+						"method": "DELETE",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "get all news",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/news",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"news"
 							]
 						}
 					},
@@ -793,6 +873,11 @@
 		},
 		{
 			"key": "token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "externalhost\n",
 			"value": "",
 			"type": "string"
 		}
