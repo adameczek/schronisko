@@ -54,6 +54,7 @@ public class JwtTokenProvider {
         
         if (user.getUser().getShelter() != null) {
             claims.put("shelter", user.getUser().getShelter().getName());
+            claims.put("shelter-id", user.getUser().getShelter().getId());
         }
         
         Date now = new Date();
@@ -80,13 +81,14 @@ public class JwtTokenProvider {
                                                                      authoritiesClaim.toString());
         
         String shelterName = claims.get("shelter", String.class);
+        long shelterId = claims.get("shelter-id", Long.class);
         
         User user = User.builder()
                         .username(String.valueOf(claims.get("username")))
                         .email(claims.getSubject())
                         .id(Long.parseLong(claims.getId()))
                         .password("")
-                        .shelter(Shelter.builder().name(shelterName).build())
+                        .shelter(Shelter.builder().name(shelterName).id(shelterId).build())
                         .roles(authorities.stream()
                                           .map(grantedAuthority -> Role.valueOf(grantedAuthority.getAuthority()))
                                           .toList())

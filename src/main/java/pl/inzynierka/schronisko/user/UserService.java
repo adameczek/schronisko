@@ -46,7 +46,10 @@ public class UserService {
     public Optional<User> findByUsername(String username) {
         return userRepository.findFirstByUsername(username);
     }
-    
+   
+    public User updateUser(User user) {
+        return userRepository.save(user);
+    }
     public User updateUser(String email, UserUpdateRequest newUserData) throws UserServiceException {
         Optional<User> optionalUser = userRepository.findFirstByEmail(email);
         

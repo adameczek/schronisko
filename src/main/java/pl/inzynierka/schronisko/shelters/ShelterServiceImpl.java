@@ -60,7 +60,10 @@ public class ShelterServiceImpl implements ShelterService {
         shelterToSave.setAddress(savedAddress);
         
         log.info("Saving new shelter with name: {}", request.getName());
-        return repository.save(shelterToSave);
+        Shelter save = repository.save(shelterToSave);
+        owner.setShelter(save);
+        userService.updateUser(owner);
+        return save;
     }
     
     @Override
