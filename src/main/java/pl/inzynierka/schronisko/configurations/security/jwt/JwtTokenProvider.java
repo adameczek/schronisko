@@ -81,7 +81,7 @@ public class JwtTokenProvider {
                                                                      authoritiesClaim.toString());
         
         String shelterName = claims.get("shelter", String.class);
-        long shelterId = claims.get("shelter-id", Long.class);
+        Long shelterId = claims.get("shelter-id", Long.class);
         
         User user = User.builder()
                         .username(String.valueOf(claims.get("username")))
