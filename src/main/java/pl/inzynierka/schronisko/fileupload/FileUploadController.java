@@ -29,7 +29,7 @@ public class FileUploadController {
     
     @GetMapping(
             value = "/{id}/{type}",
-            produces = MediaType.APPLICATION_OCTET_STREAM_VALUE
+            produces = MediaType.IMAGE_JPEG_VALUE
     )
     public ResponseEntity<byte[]> getImage(
             @PathVariable long id,
