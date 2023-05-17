@@ -16,10 +16,7 @@ services:
     networks:
       - main-network
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    #    image: $IMAGE_LINK
+    image: $IMAGE_LINK
     container_name: $APP_NAME
     restart: on-failure
     depends_on:
