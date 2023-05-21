@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.inzynierka.schronisko.authentication.AuthenticationUtils;
+import pl.inzynierka.schronisko.common.SimpleResponse;
 import pl.inzynierka.schronisko.imagescaler.ResolutionEnum;
 import pl.inzynierka.schronisko.user.User;
 
@@ -45,6 +46,19 @@ public class FileUploadController {
                                               ResponseEntity.badRequest().body(bytes))
                                 .orElse(ResponseEntity.badRequest().body(new byte[0]));
         
+    }
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyAuthority('MODERATOR','ADMIN')")
+    public ResponseEntity<SimpleResponse> removeImage(@PathVariable long id)
+    {
+        User authenticatedUser = AuthenticationUtils.getAuthenticatedUser();
+        return fileUploadService.getImage(id)
+                                                                .filter(imageFileDTO -> imageFileDTO.getOwner()
+                                                                                                    .equals(authenticatedUser))
+                .map(imageFileDTO -> fileUploadService.removeImageById(imageFileDTO.getId()))
+                .map(o -> new SimpleResponse(true, null))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.badRequest().body(new SimpleResponse(false, "nie można było usunąć pliku z podanym id")));
     }
     
     private ImageFileResponse convertToResponse(ImageFileDTO imageFileDTO) {

@@ -65,4 +65,16 @@ public class FileUploadService {
         
         return new ByteArrayInputStream(imageFileDTO.getImageByEnum(resolutionEnum));
     }
+    
+    public boolean removeImageById(Long id) {
+        try {
+            imageFileRepository.deleteById(id);
+            
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            
+            return false;
+        }
+    }
 }
