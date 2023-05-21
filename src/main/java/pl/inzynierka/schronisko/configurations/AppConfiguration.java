@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilde
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+import pl.inzynierka.schronisko.advices.Advice;
+import pl.inzynierka.schronisko.advices.AdviceResponse;
 import pl.inzynierka.schronisko.animals.Animal;
 import pl.inzynierka.schronisko.animals.AnimalResponse;
 import pl.inzynierka.schronisko.configurations.converters.TagListConverter;
@@ -24,6 +26,7 @@ public class AppConfiguration {
         var modelmapper = new ModelMapper();
         setAnimalToAnimalResponseMapping(modelmapper, environment);
         setNewsToNewsResponseMapping(modelmapper);
+        setAdviceToAdviceResponseMapping(modelmapper);
         return modelmapper;
     }
     
@@ -32,6 +35,13 @@ public class AppConfiguration {
         
         typeMap.addMappings(mapper -> mapper.map(news -> news.getShelter().getName(), NewsResponse::setShelter));
         typeMap.addMappings(mapper -> mapper.map(news -> news.getAddedBy().getEmail(), NewsResponse::setAddedBy));
+    }
+    
+    private void setAdviceToAdviceResponseMapping(ModelMapper modelmapper) {
+        TypeMap<Advice, AdviceResponse> typeMap = modelmapper.createTypeMap(Advice.class, AdviceResponse.class);
+        
+        typeMap.addMappings(mapper -> mapper.map(news -> news.getShelter().getName(), AdviceResponse::setShelter));
+        typeMap.addMappings(mapper -> mapper.map(news -> news.getAddedBy().getEmail(), AdviceResponse::setAddedBy));
     }
     
     private void setAnimalToAnimalResponseMapping(ModelMapper modelMapper, Environment environment) {
