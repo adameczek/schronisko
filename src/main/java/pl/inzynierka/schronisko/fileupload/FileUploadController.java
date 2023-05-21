@@ -3,6 +3,7 @@ package pl.inzynierka.schronisko.fileupload;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import java.io.IOException;
 public class FileUploadController {
     private final FileUploadService fileUploadService;
     @PostMapping(value = "/upload")
+    @PreAuthorize("hasAnyAuthority('MODERATOR')")
     public ResponseEntity<ImageFileResponse> uploadFile(
             @RequestParam MultipartFile file) throws IOException {
         final User authenticatedUser = AuthenticationUtils.getAuthenticatedUser();
