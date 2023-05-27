@@ -218,7 +218,7 @@
 								"method": "POST",
 								"header": [],
 								"url": {
-									"raw": "{{host}}/animals/types/kot/bengalski",
+									"raw": "{{host}}/animals/types/kot/dachowiec",
 									"host": [
 										"{{host}}"
 									],
@@ -226,7 +226,7 @@
 										"animals",
 										"types",
 										"kot",
-										"bengalski"
+										"dachowiec"
 									]
 								}
 							},
@@ -387,7 +387,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"schronicho2\",\r\n    \"address\": {\r\n        \"postCode\": \"62-020\",\r\n        \"city\": \"Warszawa\",\r\n        \"voivodeship\": \"Wielkopolska\",\r\n        \"street\": \"główna\",\r\n        \"houseNumber\": \"12a\",\r\n        \"latitude\": 12.5,\r\n        \"longitude\": 13.2345\r\n    },\r\n    \"ownerEmail\": \"adam1sawicki@gmail.com\",\r\n    \"email\": \"schronicho@schronicho.pl\",\r\n    \"phoneNumber\": \"886460291\"\r\n}",
+							"raw": "{\r\n    \"name\": \"schronicho3\",\r\n    \"address\": {\r\n        \"postCode\": \"62-020\",\r\n        \"city\": \"Warszawa\",\r\n        \"voivodeship\": \"Wielkopolska\",\r\n        \"street\": \"główna\",\r\n        \"houseNumber\": \"12a\",\r\n        \"latitude\": 12.5,\r\n        \"longitude\": 13.2345\r\n    },\r\n    \"ownerEmail\": \"adam1sawicki@gmail.com\",\r\n    \"email\": \"schronicho@schronicho.pl\",\r\n    \"phoneNumber\": \"886460291\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -639,7 +639,7 @@
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/home/adamsawicki/Downloads/20230417_183935_javasabr_lmc16_s23_v4_soft.jpg"
+									"src": "/home/adamsawicki/Pictures/wordpress/20230324_115609.jpg"
 								}
 							]
 						},
@@ -659,6 +659,9 @@
 				{
 					"name": "get image",
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -722,7 +725,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/news/:shelter",
+							"raw": "{{host}}/news/:shelter?page=0",
 							"host": [
 								"{{host}}"
 							],
@@ -730,10 +733,16 @@
 								"news",
 								":shelter"
 							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							],
 							"variable": [
 								{
 									"key": "shelter",
-									"value": "schronicho3"
+									"value": null
 								}
 							]
 						}
@@ -744,7 +753,23 @@
 					"name": "delete news",
 					"request": {
 						"method": "DELETE",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{host}}/news/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"news",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "316"
+								}
+							]
+						}
 					},
 					"response": []
 				},
@@ -760,6 +785,167 @@
 							],
 							"path": [
 								"news"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Advices",
+			"item": [
+				{
+					"name": "create advice",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"message\": \"witam witam o tej porze kazdy wypic moze\",\n    \"title\": \"Piston postrach wsi\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}/advices",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"advices"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get last advices of shelter",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/advices/:shelter?page=0",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"advices",
+								":shelter"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								}
+							],
+							"variable": [
+								{
+									"key": "shelter",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete advice",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/advices/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"advices",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "316"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get all advices",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/advices",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"advices"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "favorites",
+			"item": [
+				{
+					"name": "get favorites",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "add to favorites",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/favorites?animalId=2",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"favorites"
+							],
+							"query": [
+								{
+									"key": "animalId",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete from favorites",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/favorites?animalId=102",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"favorites"
+							],
+							"query": [
+								{
+									"key": "animalId",
+									"value": "102"
+								}
 							]
 						}
 					},
@@ -878,6 +1064,11 @@
 		},
 		{
 			"key": "externalhost\n",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "css",
 			"value": "",
 			"type": "string"
 		}
