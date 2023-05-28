@@ -23,7 +23,7 @@ public class FileUploadController {
     @PostMapping(value = "/upload")
     @PreAuthorize("hasAnyAuthority('MODERATOR')")
     public ResponseEntity<ImageFileResponse> uploadFile(
-            @RequestParam MultipartFile file) throws IOException {
+            @RequestPart MultipartFile file) throws IOException {
         final User authenticatedUser = AuthenticationUtils.getAuthenticatedUser();
         ImageFileDTO imageFileDTO = fileUploadService.uploadImage(authenticatedUser, file);
         

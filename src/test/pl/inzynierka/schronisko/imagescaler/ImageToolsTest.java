@@ -51,13 +51,13 @@ class ImageToolsTest {
     void shouldCropImageToHighResolution() {
         BufferedImage bufferedImage = new BufferedImage(3000, 3000, BufferedImage.TYPE_INT_RGB);
         
-        BufferedImage result = ImageTools.cropImageToNearestResolution(bufferedImage);
+        CroppedImage result = ImageTools.cropImageToNearestResolution(bufferedImage);
         Condition<BufferedImage>
                 croppedToHighResolution
                 = new Condition<>(image -> new Resolution(image.getWidth(), image.getHeight()).equals(
                 ResolutionEnum.HIGH.resolution), "high resolution");
         
-        Assertions.assertThat(result).is(croppedToHighResolution);
+        Assertions.assertThat(result.image()).is(croppedToHighResolution);
     }
     
     @Test
@@ -69,7 +69,7 @@ class ImageToolsTest {
         g.setColor(Color.black);
         g.fillRect(185, 109, ResolutionEnum.MINI.resolution.width(), ResolutionEnum.MINI.resolution.height());
         
-        BufferedImage result = ImageTools.cropImageToNearestResolution(bufferedImage);
+        BufferedImage result = ImageTools.cropImageToNearestResolution(bufferedImage).image();
         
         Condition<BufferedImage> allBlack = new Condition<>(image -> {
             for (int x = 0; x < image.getWidth(); x++) {
