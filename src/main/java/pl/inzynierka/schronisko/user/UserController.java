@@ -62,7 +62,7 @@ public class UserController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         final User userDetails = (User) authentication.getPrincipal();
         
-        return getUser(userDetails.getEmail(), false);
+        return getUser(userDetails.getEmail());
     }
     
     @GetMapping("/{username}")
@@ -70,10 +70,8 @@ public class UserController {
     @Operation(summary = "Get user by username")
     ResponseEntity<UserResponse> getUser(
             @PathVariable
-            final String username,
-            @RequestParam boolean byUsername) {
-        final Optional<User> user = byUsername ? userService.findByUsername(username) : userService.findByEmail(
-                username);
+            final String username) {
+        final Optional<User> user = userService.findByUsername(username);
         
         return user.map(this::convertToResponse).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound()
                                                                                                        .build());

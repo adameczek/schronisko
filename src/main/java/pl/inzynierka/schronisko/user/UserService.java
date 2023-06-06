@@ -44,7 +44,7 @@ public class UserService {
     }
     
     public Optional<User> findByUsername(String username) {
-        return userRepository.findFirstByUsername(username);
+        return userRepository.findFirstByUsernameOrEmail(username, username);
     }
    
     public User updateUser(User user) {
