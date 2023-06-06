@@ -16,7 +16,8 @@ public class RequestToObjectMapper {
         try {
             ObjectMapper ob = new ObjectMapper();
             ob.findAndRegisterModules();
-            D copy = ob.readValue(ob.writeValueAsString(existingObject), objectClass);
+            String objAsString = ob.writeValueAsString(existingObject);
+            D copy = ob.readValue(objAsString, objectClass);
             T objectMappedToRequest = modelMapper.map(existingObject, requestClass);
             
             ObjectReader objectReader = ob.readerForUpdating(objectMappedToRequest);

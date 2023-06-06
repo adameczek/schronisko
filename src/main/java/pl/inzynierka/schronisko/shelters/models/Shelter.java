@@ -1,5 +1,7 @@
 package pl.inzynierka.schronisko.shelters.models;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonMerge;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Nullable;
@@ -20,6 +22,7 @@ import java.util.List;
 @Getter
 @Builder
 @Setter
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Shelter {
     @LastModifiedDate
     LocalDateTime updatedAt;
@@ -32,6 +35,7 @@ public class Shelter {
     )
     private String name;
     @OneToOne
+    @JsonBackReference
     private User owner;
     @OneToMany(fetch = FetchType.LAZY)
     private List<User> employees;

@@ -1,5 +1,7 @@
 package pl.inzynierka.schronisko.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
@@ -25,6 +27,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -105,6 +108,7 @@ public class User {
     private boolean active = true;
     @ManyToOne(fetch = FetchType.LAZY)
     @ToString.Exclude
+    @JsonManagedReference
     private Shelter shelter;
     @OneToMany(fetch = FetchType.EAGER)
     private List<ImageFileDTO> images = Arrays.asList(new ImageFileDTO[5]);
