@@ -88,7 +88,7 @@
 							"variable": [
 								{
 									"key": "username",
-									"value": "adamoss"
+									"value": "adam1sawicki@gmail.com"
 								}
 							]
 						}
@@ -102,7 +102,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"username\": \"\",\r\n    \"firstname\": \"\"\r\n}",
+							"raw": "{\r\n    \"username\": \"adamello\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -110,7 +110,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{host}}/users?email=adam3sawicki@gmail.com",
+							"raw": "{{host}}/users?email=adam1sawicki@gmail.com",
 							"host": [
 								"{{host}}"
 							],
@@ -120,7 +120,7 @@
 							"query": [
 								{
 									"key": "email",
-									"value": "adam3sawicki@gmail.com"
+									"value": "adam1sawicki@gmail.com"
 								}
 							]
 						}
@@ -278,12 +278,18 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{host}}/animals",
+							"raw": "{{host}}/animals?page=1",
 							"host": [
 								"{{host}}"
 							],
 							"path": [
 								"animals"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "1"
+								}
 							]
 						}
 					},
@@ -322,7 +328,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"azowwwrek\",\r\n    \"description\": null,\r\n    \"weight\": 3.0,\r\n    \"race\": \"brytyjczyk\",\r\n    \"images\": [1, 2]\r\n    }",
+							"raw": "{\r\n    \"weight\": 8.0\r\n    // \"images\": [\r\n    //     1,\r\n    //     2\r\n    // ]\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -341,7 +347,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "203"
+									"value": "503"
 								}
 							]
 						}
@@ -370,6 +376,30 @@
 							"path": [
 								"animals",
 								"search"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete animal",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/animals/:id",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"animals",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "553"
+								}
 							]
 						}
 					},
@@ -509,7 +539,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    2\r\n]",
+							"raw": "[\r\n    463\r\n]",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -597,7 +627,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"phoneNumber\": \"886460291\",\r\n    \"email\": \"schronisko@ddd.pl\"\r\n}",
+							"raw": "{\r\n    \"phoneNumber\": \"886460291123312\"}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -616,7 +646,7 @@
 							"variable": [
 								{
 									"key": "name",
-									"value": "schronicho"
+									"value": "schronicho2"
 								}
 							]
 						}
@@ -630,16 +660,29 @@
 			"item": [
 				{
 					"name": "upload image",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
 					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "multipart/form-data",
+								"type": "text",
+								"disabled": true
+							}
+						],
 						"body": {
 							"mode": "formdata",
 							"formdata": [
 								{
 									"key": "file",
 									"type": "file",
-									"src": "/home/adamsawicki/Pictures/wordpress/20230324_115609.jpg"
+									"src": "/home/adamsawicki/Pictures/Screenshots/Screenshot from 2023-06-06 14-45-54.png"
 								}
 							]
 						},
@@ -742,7 +785,7 @@
 							"variable": [
 								{
 									"key": "shelter",
-									"value": null
+									"value": "schronicho"
 								}
 							]
 						}
@@ -901,7 +944,16 @@
 					"name": "get favorites",
 					"request": {
 						"method": "GET",
-						"header": []
+						"header": [],
+						"url": {
+							"raw": "{{host}}/favorites",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"favorites"
+							]
+						}
 					},
 					"response": []
 				},
@@ -909,6 +961,29 @@
 					"name": "add to favorites",
 					"request": {
 						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{host}}/favorites?animalId=3",
+							"host": [
+								"{{host}}"
+							],
+							"path": [
+								"favorites"
+							],
+							"query": [
+								{
+									"key": "animalId",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete from favorites",
+					"request": {
+						"method": "DELETE",
 						"header": [],
 						"url": {
 							"raw": "{{host}}/favorites?animalId=2",
@@ -922,29 +997,6 @@
 								{
 									"key": "animalId",
 									"value": "2"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Delete from favorites",
-					"request": {
-						"method": "DELETE",
-						"header": [],
-						"url": {
-							"raw": "{{host}}/favorites?animalId=102",
-							"host": [
-								"{{host}}"
-							],
-							"path": [
-								"favorites"
-							],
-							"query": [
-								{
-									"key": "animalId",
-									"value": "102"
 								}
 							]
 						}
