@@ -34,19 +34,19 @@ public class Shelter {
             nullable = false
     )
     private String name;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JsonBackReference
     private User owner;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<User> employees;
     @Size(
             min = 0,
             max = 5000
     )
     private String description;
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Animal> animals;
-    @OneToOne(cascade = CascadeType.REMOVE)
+    @OneToOne(cascade = CascadeType.REMOVE, orphanRemoval = true)
     @JoinColumn(
             unique = true,
             nullable = false

@@ -74,6 +74,7 @@ public class ShelterServiceImpl implements ShelterService {
         
         try {
             var modelMapperForUpdate = new ModelMapper();
+            modelMapperForUpdate.getConfiguration().setDeepCopyEnabled(true);
             modelMapperForUpdate.getConfiguration().setSkipNullEnabled(true);
             modelMapperForUpdate.map(request, savedShelter);
             savedShelter.setUpdatedAt(LocalDateTime.now());
