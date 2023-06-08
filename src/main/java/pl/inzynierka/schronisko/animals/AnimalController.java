@@ -16,7 +16,6 @@ import org.springframework.web.context.request.WebRequest;
 import pl.inzynierka.schronisko.authentication.AuthenticationUtils;
 import pl.inzynierka.schronisko.common.ErrorResponse;
 import pl.inzynierka.schronisko.common.SimpleResponse;
-import pl.inzynierka.schronisko.shelters.ShelterServiceException;
 import pl.inzynierka.schronisko.user.Role;
 import pl.inzynierka.schronisko.user.User;
 
@@ -115,9 +114,9 @@ public class AnimalController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAnyAuthority('MODERATOR', 'ADMIN')")
     ResponseEntity<SimpleResponse> deleteAnimal(
-            @PathVariable long id) throws InsufficentUserRoleException {
+            @PathVariable long id) throws InsufficentUserRoleException, AnimalServiceException {
         final User authenticatedUser = AuthenticationUtils.getAuthenticatedUser();
-        Animal animalToDelete = animalService.getAnimalById(id).orElseThrow(() -> new ShelterServiceException(
+        Animal animalToDelete = animalService.getAnimalById(id).orElseThrow(() -> new AnimalServiceException(
                 "Nie znaleziono zwierzęcia z takim id!"));
         
         if (authenticatedUser.hasNoRoles(Role.ADMIN)

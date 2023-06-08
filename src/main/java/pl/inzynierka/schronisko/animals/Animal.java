@@ -28,6 +28,9 @@ import java.util.List;
 @Getter
 @Setter
 public class Animal {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     @ManyToOne
     @NotNull(groups = RepositorySave.class) User createdBy;
     @ManyToMany
@@ -35,9 +38,6 @@ public class Animal {
     private List<AnimalTag> tags;
     @Nullable
     private Double weight;
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
     
     @NotNull(groups = RepositorySave.class)
     @ManyToOne

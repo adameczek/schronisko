@@ -1,4 +1,4 @@
-package pl.inzynierka.schronisko.configurations;
+package pl.inzynierka.schronisko.configurations.converters;
 
 import org.modelmapper.AbstractConverter;
 import pl.inzynierka.schronisko.fileupload.ImageFileDTO;

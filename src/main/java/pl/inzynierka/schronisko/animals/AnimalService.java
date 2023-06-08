@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.inzynierka.schronisko.common.MappingException;
 import pl.inzynierka.schronisko.common.SimpleResponse;
 import pl.inzynierka.schronisko.user.User;
@@ -51,6 +52,7 @@ public class AnimalService {
         }
     }
     
+    @Transactional
     public Animal updateAnimal(Long id, String newAnimalDataRequest) throws AnimalServiceException {
         Animal existingAnimalData = animalsRepository.findById(id).orElseThrow(() -> new AnimalServiceException(
                 "Nie znaleziono zwierzecia do zaktualizowania z danym id"));
@@ -68,8 +70,9 @@ public class AnimalService {
         }
     }
     
+    @Transactional
     public SimpleResponse deleteAnimal(long id) {
-        var result = animalsRepository.deleteById(id);
+        int result = animalsRepository.deleteAnimalById(id);
         
         return new SimpleResponse(result == 1, null);
     }

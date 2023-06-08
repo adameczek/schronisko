@@ -12,7 +12,7 @@ import pl.inzynierka.schronisko.animals.tags.AnimalTagService;
 import pl.inzynierka.schronisko.animals.types.AnimalType;
 import pl.inzynierka.schronisko.animals.types.AnimalTypeService;
 import pl.inzynierka.schronisko.common.MappingException;
-import pl.inzynierka.schronisko.configurations.ImageListConverter;
+import pl.inzynierka.schronisko.configurations.converters.ImageListToRequestConverter;
 import pl.inzynierka.schronisko.fileupload.ImageFileDTO;
 
 import java.io.IOException;
@@ -52,7 +52,7 @@ public class AnimalMapper {
                                     .map(Animal::getType, AnimalRequest::setType));
         typeMap.addMappings(ex -> ex.using(animalTagListStringListConverter())
                                     .map(Animal::getTags, AnimalRequest::setTags));
-        typeMap.addMappings(ex -> ex.using(new ImageListConverter(""))
+        typeMap.addMappings(ex -> ex.using(new ImageListToRequestConverter())
                                     .map(Animal::getImages, AnimalRequest::setImages));
         
         return mapper.map(animalToMap, AnimalRequest.class);

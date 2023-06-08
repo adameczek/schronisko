@@ -16,11 +16,10 @@ import java.util.List;
 @Setter
 public class AnimalResponse {
     
+    private long id;
     @Schema(description = "List of animal tags to help with searching")
     private List<String> tags;
-    @Schema(description = "Creator of animal")
-    private UserResponse createdBy;
-    private long id;
+    
     @Schema(
             description = "Type of animal",
             example = "Pies"
@@ -55,4 +54,6 @@ public class AnimalResponse {
     private Sex sex;
     private String difficulty;
     private Integer age;
+    @Schema(description = "Creator of animal")
+    private UserResponse createdBy;
 }

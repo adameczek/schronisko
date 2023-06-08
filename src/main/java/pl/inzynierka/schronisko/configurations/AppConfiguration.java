@@ -11,6 +11,7 @@ import pl.inzynierka.schronisko.advices.Advice;
 import pl.inzynierka.schronisko.advices.AdviceResponse;
 import pl.inzynierka.schronisko.animals.Animal;
 import pl.inzynierka.schronisko.animals.AnimalResponse;
+import pl.inzynierka.schronisko.configurations.converters.ImageListConverter;
 import pl.inzynierka.schronisko.configurations.converters.TagListConverter;
 import pl.inzynierka.schronisko.news.News;
 import pl.inzynierka.schronisko.news.NewsResponse;
