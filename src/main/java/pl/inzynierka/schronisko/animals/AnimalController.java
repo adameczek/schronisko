@@ -129,6 +129,6 @@ public class AnimalController {
             throw new InsufficentUserRoleException("Cannot delete animal if user is not at least moderator.");
         }
         
-        return ResponseEntity.ok(animalService.deleteAnimal(id));
+        return ResponseEntity.ok(animalService.deleteAnimal(animalToDelete));
     }
 }

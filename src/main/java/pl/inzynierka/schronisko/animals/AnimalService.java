@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.inzynierka.schronisko.common.MappingException;
 import pl.inzynierka.schronisko.common.SimpleResponse;
+import pl.inzynierka.schronisko.favorites.FavoritesRepository;
 import pl.inzynierka.schronisko.user.User;
 
 import java.time.LocalDateTime;
@@ -25,6 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Slf4j
 public class AnimalService {
+    private final FavoritesRepository favoritesRepository;
     private final AnimalsRepository animalsRepository;
     private final AnimalMapper animalMapper;
     private final EntityManager entityManager;
@@ -132,5 +134,13 @@ public class AnimalService {
         } else {
             throw new AnimalServiceException("Niepoprawna nazwa pola do sortowania!");
         }
+    }
+    
+    public SimpleResponse deleteAnimal(Animal animalToDelete) {
+        animalToDelete.getFavorites().removeAll(animalToDelete.getFavorites());
+        
+        animalsRepository.delete(animalToDelete);
+        
+        return new SimpleResponse(true, null);
     }
 }

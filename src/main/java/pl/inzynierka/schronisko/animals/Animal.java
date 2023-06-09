@@ -8,18 +8,23 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import pl.inzynierka.schronisko.animals.tags.AnimalTag;
 import pl.inzynierka.schronisko.animals.types.AnimalType;
 import pl.inzynierka.schronisko.animals.types.Difficulty;
 import pl.inzynierka.schronisko.configurations.validationscopes.RepositorySave;
+import pl.inzynierka.schronisko.favorites.Favorite;
 import pl.inzynierka.schronisko.fileupload.ImageFileDTO;
 import pl.inzynierka.schronisko.shelters.models.Shelter;
 import pl.inzynierka.schronisko.user.User;
 
 import java.time.LocalDateTime;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @AllArgsConstructor
 @Builder
@@ -86,6 +91,14 @@ public class Animal {
     private String color;
     @Nullable
     private Difficulty difficulty;
+    
+    @ManyToMany(
+            mappedBy = "favorites",
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}
+    )
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private Set<Favorite> favorites = new LinkedHashSet<>();
+    
     @Nullable
     @Min(0)
     @Max(50)

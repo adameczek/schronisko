@@ -2,6 +2,7 @@ package pl.inzynierka.schronisko.favorites;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.inzynierka.schronisko.animals.Animal;
 import pl.inzynierka.schronisko.user.User;
 
@@ -27,6 +28,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
     
     @Override
+    @Transactional
     public void removeAnimalFromFavorites(long animalId, long userId) {
         Optional<Favorite> userfavorites = favoritesRepository.findUserfavorites(userId);
         
@@ -46,6 +48,7 @@ public class FavoriteServiceImpl implements FavoriteService {
     }
     
     @Override
+    @Transactional
     public void addAnimalToFavorites(User user, Animal animal) {
         Favorite userFavorites = favoritesRepository.findUserfavorites(user.getId()).orElse(new Favorite(0l,
                                                                                                          user,
