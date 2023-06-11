@@ -41,10 +41,36 @@ public class AnimalSpecifications {
         });
     }
     
+    public static Specification<Animal> hasTypeOtherThan(List<String> types) {
+        return ((root, query, criteriaBuilder) -> {
+            Join<AnimalType, Animal> animalType = root.join("type");
+            
+            CriteriaBuilder.In<Object> value = criteriaBuilder.in(animalType.get("value"));
+            
+            for (var type : types) {
+                value.value(type);
+            }
+            
+            return criteriaBuilder.not(value);
+        });
+    }
+    
     public static Specification<Animal> createdBy(String email) {
         return (root, query, criteriaBuilder) -> {
             Join<User, Animal> createdBy = root.join("users");
             return criteriaBuilder.equal(createdBy.get("email"), email);
         };
+    }
+    
+    public static Specification<Animal> hasSex(Sex sex) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("sex"), sex);
+    }
+    
+    public static Specification<Animal> hasAgeBetween(AnimalSearchQuery.AnimalAge age) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("age"), age.min, age.max);
+    }
+    
+    public static Specification<Animal> hasWeightBetween(AnimalSearchQuery.AnimalSize size) {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.between(root.get("weight"), size.min, size.max);
     }
 }

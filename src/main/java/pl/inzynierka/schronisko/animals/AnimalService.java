@@ -94,8 +94,20 @@ public class AnimalService {
         if (Objects.nonNull(searchQuery.getTypes()))
             specification = specification.and(AnimalSpecifications.hasTypeIn(searchQuery.getTypes()));
         
+        if (Objects.nonNull(searchQuery.getNotInTypes()))
+            specification = specification.and(AnimalSpecifications.hasTypeOtherThan(searchQuery.getNotInTypes()));
+        
         if (Objects.nonNull(searchQuery.getTags()))
             specification = specification.and(AnimalSpecifications.hasTags(searchQuery.getTags()));
+        
+        if (Objects.nonNull(searchQuery.getAge()))
+            specification = specification.and(AnimalSpecifications.hasAgeBetween(searchQuery.getAge()));
+        
+        if (Objects.nonNull(searchQuery.getSize()))
+            specification = specification.and(AnimalSpecifications.hasWeightBetween(searchQuery.getSize()));
+        
+        if (Objects.nonNull(searchQuery.getSex()))
+            specification = specification.and(AnimalSpecifications.hasSex(searchQuery.getSex()));
         
         PageRequest pageRequest;
         
