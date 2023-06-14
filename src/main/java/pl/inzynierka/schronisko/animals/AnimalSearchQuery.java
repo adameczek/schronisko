@@ -33,11 +33,11 @@ public class AnimalSearchQuery {
             description = "Animal sex"
     )
     @Nullable
-    private Sex sex;
+    private List<Sex> sex;
     @Nullable
-    private AnimalAge age;
+    private List<AnimalAge> age;
     @Nullable
-    private AnimalSize size;
+    private List<AnimalSize> size;
     @Schema(
             description = "by which field it should be sorted, default it sorts by create date ascending. You "
                           + "start with '+' or '-', and then type name of field.",
